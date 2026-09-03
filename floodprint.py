@@ -2,7 +2,6 @@ import cv2
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 import numpy as np
 
@@ -16,16 +15,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 def detectar_zona_urbana(imagen_gray):
-    # Desenfoque más fuerte para eliminar ruido superficial de texturas de vegetación
     gray_blur = cv2.GaussianBlur(imagen_gray, (11, 11), 0)
-    # Umbrales de Canny más altos para ignorar texturas naturales y capturar solo estructuras rígidas
     edges = cv2.Canny(gray_blur, 120, 220)
     densidad_bordes = float(np.mean(edges) / 255.0)
-
-    # Umbral elevado para evitar que los bosques o mapas densos pasen por urbanos
     es_urbano = bool(densidad_bordes > 0.22)
     return es_urbano, densidad_bordes
+
 
 def estimar_cultivo_por_color(imagen_hsv, es_urbano: bool):
     if es_urbano:
@@ -64,10 +61,8 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
         gray = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
         hsv = cv2.cvtColor(imagen, cv2.COLOR_BGR2HSV)
 
-        # 1. Evaluar si la imagen es predominantemente urbana con el nuevo filtro
         es_urbano, densidad = detectar_zona_urbana(gray)
 
-        # 2. Rangos HSV de agua corregidos para evitar falsos positivos en sombras/suelos
         lower_w1 = np.array([0, 0, 0])
         upper_w1 = np.array([180, 255, 45])
         mask1 = cv2.inRange(hsv, lower_w1, upper_w1)
@@ -83,17 +78,14 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
         water_mask = cv2.bitwise_or(mask1, mask2)
         water_mask = cv2.bitwise_or(water_mask, mask3)
 
-        # 3. Limpieza Morfológica
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         water_mask = cv2.morphologyEx(water_mask, cv2.MORPH_OPEN, kernel)
         water_mask = cv2.morphologyEx(water_mask, cv2.MORPH_CLOSE, kernel)
 
-        # 4. Filtrado por área de contorno
         contours, _ = cv2.findContours(
             water_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
         mask_filtrada = np.zeros_like(water_mask)
-
         min_area = total_pixels * 0.0015 
 
         for cnt in contours:
@@ -108,7 +100,6 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
         )
         porcentaje_dano = float(min(porcentaje_dano, 100.0))
 
-        # Cálculo de superficie
         promedio_color = int(np.mean(imagen))
         superficie_total = int(450 + (promedio_color % 10) * 80 + (width % 100))
         area_afectada = float(
@@ -141,22 +132,8 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
 
 
 # =======================================================
-# NUEVO: RUTAS PARA SERVIR TUS PÁGINAS WEB (FRONTEND)
+# SERVIR FRONTEND DE FORMA ESTÁTICA (Solución definitiva)
 # =======================================================
-
-# 1. Si existe una carpeta "img" con tus fotos, le decimos a Python que la muestre
-if os.path.isdir("img"):
-    app.mount("/img", StaticFiles(directory="img"), name="img")
-
-# 2. Cuando el usuario entra a tu link principal de Render, cargamos el index.html
-@app.get("/")
-async def cargar_inicio():
-    return FileResponse("index.html")
-
-# 3. Ruta dinámica para cargar cualquier otra página (.html) que esté en tu carpeta
-@app.get("/{pagina}.html")
-async def cargar_paginas(pagina: str):
-    archivo = f"{pagina}.html"
-    if os.path.exists(archivo):
-        return FileResponse(archivo)
-    raise HTTPException(status_code=404, detail="Página no encontrada")
+# Esto le dice a FastAPI que monte la carpeta actual y busque automáticamente 
+# el index.html cuando entren a la raíz (/) y permita abrir las demás páginas (.html)
+app.mount("/", StaticFiles(directory=".", html=True), name="static")
