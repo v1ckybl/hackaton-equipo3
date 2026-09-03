@@ -9,7 +9,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -42,30 +42,31 @@
         header {
             background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
             color: var(--blanco);
-            padding: 4rem 1.5rem;
+            padding: 3.5rem 1.5rem 4.5rem 1.5rem;
             text-align: center;
             border-bottom: 5px solid #10b981;
         }
 
         header h1 {
-            font-size: 2.8rem;
+            font-size: 2.6rem;
             font-weight: 700;
-            margin-bottom: 1rem;
+            margin-bottom: 0.75rem;
             letter-spacing: -0.5px;
         }
 
         header p {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 300;
             opacity: 0.95;
-            max-width: 750px;
+            max-width: 800px;
             margin: 0 auto;
+            line-height: 1.5;
         }
 
-        /* Contenedor Principal */
+        /* Contenedor Principal Más Compacto */
         .contenedor {
-            max-width: 1200px;
-            margin: -2rem auto 4rem auto; /* Sube un poco sobre el header */
+            max-width: 1150px;
+            margin: -2.5rem auto 3rem auto; /* Eleva el grid sobre el header */
             padding: 0 1.5rem;
             position: relative;
             z-index: 10;
@@ -73,14 +74,14 @@
 
         .grid-servicios {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem; /* Cuadrantes más cercanos y armónicos */
         }
 
         /* Tarjetas (Cards) */
         .tarjeta {
             background: var(--blanco);
-            border-radius: 16px;
+            border-radius: 14px;
             overflow: hidden;
             box-shadow: var(--sombra);
             transition: all 0.3s ease;
@@ -90,7 +91,7 @@
         }
 
         .tarjeta:hover {
-            transform: translateY(-8px);
+            transform: translateY(-6px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             border-color: var(--verde-primario);
         }
@@ -98,7 +99,7 @@
         /* Contenedor de la Imagen */
         .img-contenedor {
             width: 100%;
-            height: 200px;
+            height: 170px;
             overflow: hidden;
             position: relative;
         }
@@ -111,17 +112,17 @@
         }
 
         .tarjeta:hover .img-contenedor img {
-            transform: scale(1.08); /* Efecto zoom al pasar el mouse */
+            transform: scale(1.06);
         }
 
         .etiqueta-flotante {
             position: absolute;
-            top: 15px;
-            right: 15px;
+            top: 12px;
+            right: 12px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 0.4rem 0.8rem;
+            padding: 0.3rem 0.7rem;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -135,42 +136,42 @@
 
         /* Cuerpo de la tarjeta */
         .tarjeta-cuerpo {
-            padding: 2rem;
+            padding: 1.5rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
         .tarjeta h2 {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             color: var(--texto-principal);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .tarjeta p.descripcion {
             color: var(--texto-secundario);
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.45;
         }
 
         /* Lista de características */
         .caracteristicas {
             list-style: none;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-grow: 1;
         }
 
         .caracteristicas li {
-            font-size: 0.85rem;
+            font-size: 0.82rem;
             color: var(--texto-secundario);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             position: relative;
-            padding-left: 1.5rem;
+            padding-left: 1.4rem;
         }
 
         .caracteristicas li::before {
@@ -188,10 +189,10 @@
             background-color: var(--verde-primario);
             color: var(--blanco);
             text-decoration: none;
-            padding: 1rem;
+            padding: 0.8rem;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: background 0.3s ease;
             width: 100%;
         }
@@ -202,10 +203,10 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            header { padding: 3rem 1rem; }
-            header h1 { font-size: 2.2rem; }
+            header { padding: 2.5rem 1rem; }
+            header h1 { font-size: 2.1rem; }
             .contenedor { margin-top: -1rem; }
-            .tarjeta-cuerpo { padding: 1.5rem; }
+            .tarjeta-cuerpo { padding: 1.25rem; }
         }
     </style>
 </head>
@@ -213,89 +214,87 @@
 
     <header>
         <h1>S.I.G.E.A</h1>
-        <p>Sistema Integral de Gestión de Emergencias Agropecuarias. Prevención, evaluación satelital y logística inteligente frente a crisis climáticas.</p>
+        <p>Sistema Integral de Gestión de Emergencias Agropecuarias. Plataforma multi-módulo de alta precisión que combina inteligencia artificial satelital, analítica predictiva de caminos y redes ciudadanas de terreno para mitigar el impacto de crisis climáticas en la producción.</p>
     </header>
 
     <main class="contenedor">
         <div class="grid-servicios">
 
-            <!-- Funcionalidad 1: Última Ventana -->
+            <!-- Módulo 1: Última Ventana -->
             <div class="tarjeta">
                 <div class="img-contenedor">
-                    <!-- Etiqueta Flotante -->
                     <span class="etiqueta-flotante logistica">Logística Predictiva</span>
-                    <!-- Imagen representativa -->
-                    <img src="https://images.unsplash.com/photo-1605649479383-7c8c3c1dbdb4?q=80&w=800&auto=format&fit=crop" alt="Camino rural embarrado">
+                    <img src="https://images.unsplash.com/photo-1605649479383-7c8c3c1dbdb4?q=80&w=800&auto=format&fit=crop" alt="Camino rural">
                 </div>
                 <div class="tarjeta-cuerpo">
                     <h2>🚜 Última Ventana</h2>
                     <p class="descripcion">
-                        Algoritmo que cruza datos meteorológicos y edafológicos (tipo de suelo) para predecir cuándo un camino de tierra quedará intransitable.
+                        Algoritmo inteligente que cruza pronósticos meteorológicos y capacidad de infiltración edafológica para anticipar el corte de caminos rurales.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Cálculo de hora límite segura de salida.</li>
-                        <li>Protege maquinaria y ganado antes del corte.</li>
-                        <li>Transforma pronósticos en decisiones logísticas.</li>
+                        <li>Cálculo exacto de la hora límite segura de salida.</li>
+                        <li>Protección anticipada de maquinaria y ganado.</li>
+                        <li>Transforma datos climáticos en logística operativa.</li>
                     </ul>
                     <a href="ultima-ventana.html" class="btn">Abrir Simulador de Rutas</a>
                 </div>
             </div>
 
-            <!-- Funcionalidad 2: FloodPrint -->
+            <!-- Módulo 2: FloodPrint AI -->
             <div class="tarjeta">
                 <div class="img-contenedor">
-                    <span class="etiqueta-flotante ia">Inteligencia Artificial</span>
-                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Vista satelital de zona inundada">
+                    <span class="etiqueta-flotante ia">Visión Artificial</span>
+                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Zona anegada">
                 </div>
                 <div class="tarjeta-cuerpo">
                     <h2>🌳 FloodPrint AI</h2>
                     <p class="descripcion">
-                        Visión por computadora aplicada a imágenes satelitales para automatizar y auditar certificados de daño productivo al instante.
+                        Procesamiento automatizado de imágenes satelitales mediante OpenCV para auditar daños productivos y emitir certificados al instante.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Diferencia cuerpos de agua naturales de anegamientos.</li>
-                        <li>Calcula severidad y porcentaje de hectáreas perdidas.</li>
-                        <li>Genera PDF automático para Emergencia Provincial.</li>
+                        <li>Diferenciación espectral de cuerpos de agua.</li>
+                        <li>Cálculo automatizado de hectáreas perdidas.</li>
+                        <li>Generación de PDF oficial para Emergencia.</li>
                     </ul>
                     <a href="floodprint.html" class="btn">Ingresar a FloodPrint</a>
                 </div>
             </div>
 
-            <!-- Funcionalidad 3: Impacto Sistémico -->
+            <!-- Módulo 3: Impacto en Cascada -->
             <div class="tarjeta">
                 <div class="img-contenedor">
                     <span class="etiqueta-flotante simulacion">Análisis Sistémico</span>
-                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="Redes y conexiones en mapa conceptual">
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="Redes conectadas">
                 </div>
                 <div class="tarjeta-cuerpo">
                     <h2>🔗 Impacto en Cascada</h2>
                     <p class="descripcion">
-                        Simulador macroeconómico y logístico. No solo muestra el agua, muestra las cadenas de valor que quedan bloqueadas en la región.
+                        Simulador macroeconómico que mapea las cadenas de valor y los establecimientos productivos que quedan completamente aislados.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Mapea establecimientos y familias aisladas.</li>
-                        <li>Cuantifica toneladas de cosecha bloqueada.</li>
-                        <li>Permite a Defensa Civil priorizar intervenciones.</li>
+                        <li>Mapeo dinámico de familias y zonas incomunicadas.</li>
+                        <li>Cuantificación de toneladas de cosecha bloqueada.</li>
+                        <li>Optimización de recursos para Defensa Civil.</li>
                     </ul>
                     <a href="impacto-sistemico.html" class="btn">Ver Mapa de Impacto</a>
                 </div>
             </div>
 
-            <!-- Funcionalidad 4: Sensor Humano -->
+            <!-- Módulo 4: Sensor Humano -->
             <div class="tarjeta">
                 <div class="img-contenedor">
                     <span class="etiqueta-flotante social">Red Ciudadana (PWA)</span>
-                    <img src="https://images.unsplash.com/photo-1595995536417-7a5611488c03?q=80&w=800&auto=format&fit=crop" alt="Productor agropecuario con tecnología">
+                    <img src="https://images.unsplash.com/photo-1595995536417-7a5611488c03?q=80&w=800&auto=format&fit=crop" alt="Productor en campo">
                 </div>
                 <div class="tarjeta-cuerpo">
                     <h2>📱 Sensor Humano</h2>
                     <p class="descripcion">
-                        Convierte a los productores en sensores distribuidos. Funciona 100% offline y sincroniza los daños al recuperar señal de internet.
+                        Aplicación móvil descentralizada para productores rurales. Opera 100% offline y sincroniza reportes de terreno al recuperar conectividad.
                     </p>
                     <ul class="caracteristicas">
-                        <li>App progresiva (PWA) para zonas rurales sin 4G.</li>
-                        <li>Geolocalización exacta de tranqueras o caminos cortados.</li>
-                        <li>Validación de confianza mediante cruce de múltiples reportes.</li>
+                        <li>Diseñada para zonas rurales sin cobertura 4G.</li>
+                        <li>Geolocalización precisa de tranqueras y daños.</li>
+                        <li>Validación cruzada de reportes comunitarios.</li>
                     </ul>
                     <a href="sensor-humano.html" class="btn">Abrir App de Terreno</a>
                 </div>
