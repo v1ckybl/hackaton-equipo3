@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#087f5b">
+  <link rel="manifest" href="manifest.json">
+  <title>Sensor Humano Rural</title>
+  <style>
+    :root {
+      --verde: #087f5b;
+      --verde-oscuro: #075b43;
+      --verde-claro: #e8f7f1;
+      --fondo: #f4f8f6;
+      --texto: #17352c;
+      --gris: #668077;
+      --borde: #d7e6df;
+      --rojo: #b42318;
+      --amarillo: #a15c00;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--fondo);
+      color: var(--texto);
+    }
+
+    .contenedor {
+      width: min(1050px, 92%);
+      margin: 0 auto;
+      padding: 28px 0 50px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    h1, h2, p { margin-top: 0; }
+    h1 { margin-bottom: 6px; font-size: clamp(1.65rem, 4vw, 2.35rem); }
+    h2 { margin-bottom: 16px; font-size: 1.25rem; }
+    .subtitulo { color: var(--gris); margin-bottom: 0; }
+
+    .estado {
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-weight: bold;
+      white-space: nowrap;
+      font-size: .9rem;
+    }
+
+    .estado.online { background: #d9f7e9; color: #116b3d; }
+    .estado.offline { background: #fff0d6; color: var(--amarillo); }
+
+    .tarjeta {
+      background: white;
+      border: 1px solid var(--borde);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 25px rgba(31, 75, 59, .06);
+    }
+
+    .grid { display: grid; gap: 15px; }
+    .grid-dos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+      font-size: .94rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--borde);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--texto);
+      background: #fbfefd;
+      font: inherit;
+    }
+
+    textarea { min-height: 90px; resize: vertical; }
+
+    input:focus, select:focus, textarea:focus {
+      outline: 3px solid rgba(8, 127, 91, .15);
+      border-color: var(--verde);
+    }
+
+    .acciones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font: inherit;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .boton-principal { background: var(--verde); color: white; }
+    .boton-principal:hover { background: var(--verde-oscuro); }
+    .boton-secundario { background: var(--verde-claro); color: var(--verde-oscuro); }
+    button:disabled { opacity: .6; cursor: not-allowed; }
+
+    .mensaje {
+      display: none;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .mensaje.visible { display: block; }
+    .mensaje.ok { background: #e4f7ed; color: #116b3d; }
+    .mensaje.error { background: #ffebe9; color: var(--rojo); }
+
+    .lista { display: grid; gap: 12px; }
+
+    .reporte {
+      border: 1px solid var(--borde);
+      border-left: 5px solid var(--verde);
+      border-radius: 12px;
+      padding: 14px;
+      background: #fcfffd;
+    }
+
+    .reporte-cabecera {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .reporte h3 { margin: 0 0 6px; font-size: 1rem; }
+    .reporte p { margin: 5px 0 0; color: var(--gris); font-size: .92rem; }
+    .etiqueta {
+      background: var(--verde-claro);
+      color: var(--verde-oscuro);
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: .78rem;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .vacio { color: var(--gris); margin-bottom: 0; }
+
+    @media (max-width: 680px) {
+      header { align-items: flex-start; flex-direction: column; }
+      .grid-dos { grid-template-columns: 1fr; }
+      .tarjeta { padding: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="contenedor">
+    <header>
+      <div>
+        <h1>Sensor Humano Rural</h1>
+        <p class="subtitulo">Reportá problemas del campo aunque no tengas internet.</p>
+      </div>
+      <div id="estadoConexion" class="estado offline">Sin internet</div>
+    </header>
+
+    <section class="tarjeta">
+      <h2>Nuevo reporte</h2>
+      <form id="formularioReporte">
+        <div class="grid grid-dos">
+          <div>
+            <label for="productorId">Identificación del productor</label>
+            <input id="productorId" required placeholder="Ejemplo: PRODUCTOR-001">
+          </div>
+
+          <div>
+            <label for="tipoEvento">Tipo de problema</label>
+            <select id="tipoEvento" required>
+              <option value="agua_camino">Agua sobre el camino</option>
+              <option value="camino_cortado">Camino cortado</option>
+              <option value="animales_aislados">Animales aislados</option>
+              <option value="produccion_afectada">Producción afectada</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="gravedad">Gravedad</label>
+            <select id="gravedad" required>
+              <option value="baja">Baja</option>
+              <option value="media" selected>Media</option>
+              <option value="alta">Alta</option>
+              <option value="critica">Crítica</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="foto">Foto opcional</label>
+            <input id="foto" type="file" accept="image/*">
+          </div>
+
+          <div>
+            <label for="latitud">Latitud</label>
+            <input id="latitud" type="number" step="any" required placeholder="Ejemplo: -27.48">
+          </div>
+
+          <div>
+            <label for="longitud">Longitud</label>
+            <input id="longitud" type="number" step="any" required placeholder="Ejemplo: -58.83">
+          </div>
+        </div>
+
+        <div class="acciones">
+          <button id="usarUbicacion" class="boton-secundario" type="button">Usar mi ubicación</button>
+        </div>
+
+        <div style="margin-top: 15px;">
+          <label for="descripcion">Descripción</label>
+          <textarea id="descripcion" placeholder="Contá brevemente qué está pasando..."></textarea>
+        </div>
+
+        <div class="acciones">
+          <button class="boton-principal" type="submit">Guardar reporte</button>
+          <button id="sincronizar" class="boton-secundario" type="button">Sincronizar pendientes</button>
+        </div>
+
+        <div id="mensaje" class="mensaje"></div>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Reportes guardados en este celular</h2>
+      <div id="listaPendientes" class="lista"></div>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Reportes recibidos por la plataforma</h2>
+      <div id="listaServidor" class="lista"></div>
+    </section>
+  </main>
+
+  <script>
+    // Esta es la URL del servidor Python que ya desplegaste en Render.
+    const API_URL = "https://python-6foi.onrender.com";
+    const CLAVE_LOCAL = "sensor_humano_reportes";
+
+    let reportes = cargarReportesLocales();
+
+    function cargarReportesLocales() {
+      try {
+        return JSON.parse(localStorage.getItem(CLAVE_LOCAL) || "[]");
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function guardarReportesLocales() {
+      localStorage.setItem(CLAVE_LOCAL, JSON.stringify(reportes));
+    }
+
+    function generarId() {
+      if (window.crypto && crypto.randomUUID) {
+        return "SR-" + crypto.randomUUID().slice(0, 10).toUpperCase();
+      }
+      return "SR-" + Date.now().toString(36).toUpperCase();
+    }
+
+    function mostrarMensaje(texto, tipo = "ok") {
+      const elemento = document.getElementById("mensaje");
+      elemento.textContent = texto;
+      elemento.className = "mensaje visible " + tipo;
+      setTimeout(() => elemento.className = "mensaje", 5000);
+    }
+
+    function escapeHtml(texto) {
+      return String(texto || "").replace(/[&<>'"]/g, caracter => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "'": "&#39;",
+        '"': "&quot;"
+      }[caracter]));
+    }
+
+    function nombreTipo(tipo) {
+      return {
+        agua_camino: "Agua sobre el camino",
+        camino_cortado: "Camino cortado",
+        animales_aislados: "Animales aislados",
+        produccion_afectada: "Producción afectada",
+        otro: "Otro"
+      }[tipo] || tipo;
+    }
+
+    function tarjetaReporte(reporte, estado) {
+      return `
+        <article class="reporte">
+          <div class="reporte-cabecera">
+            <div>
+              <h3>${escapeHtml(nombreTipo(reporte.tipo_evento))}</h3>
+              <p><strong>Productor:</strong> ${escapeHtml(reporte.productor_id)}</p>
+              <p><strong>Gravedad:</strong> ${escapeHtml(reporte.gravedad)}</p>
+              <p><strong>Ubicación:</strong> ${escapeHtml(reporte.latitud)}, ${escapeHtml(reporte.longitud)}</p>
+              <p><strong>Descripción:</strong> ${escapeHtml(reporte.descripcion) || "Sin descripción"}</p>
+            </div>
+            <span class="etiqueta">${escapeHtml(estado)}</span>
+          </div>
+        </article>`;
+    }
+
+    function mostrarReportesLocales() {
+      const elemento = document.getElementById("listaPendientes");
+      const pendientes = reportes.filter(reporte => reporte.estado === "pendiente");
+
+      if (pendientes.length === 0) {
+        elemento.innerHTML = '<p class="vacio">No hay reportes pendientes.</p>';
+        return;
+      }
+
+      elemento.innerHTML = pendientes
+        .map(reporte => tarjetaReporte(reporte, "Pendiente"))
+        .join("");
+    }
+
+    function actualizarEstadoConexion() {
+      const elemento = document.getElementById("estadoConexion");
+      const conectado = navigator.onLine;
+      elemento.textContent = conectado ? "Con internet" : "Sin internet";
+      elemento.className = "estado " + (conectado ? "online" : "offline");
+
+      if (conectado) sincronizarPendientes();
+    }
+
+    function leerFoto(file) {
+      if (!file) return Promise.resolve(null);
+
+      return new Promise((resolve) => {
+        const lector = new FileReader();
+        lector.onload = () => resolve({ nombre: file.name, contenido: lector.result });
+        lector.onerror = () => resolve({ nombre: file.name, contenido: null });
+        lector.readAsDataURL(file);
+      });
+    }
+
+    async function crearReporte(evento) {
+      evento.preventDefault();
+
+      const foto = await leerFoto(document.getElementById("foto").files[0]);
+      const reporte = {
+        id: generarId(),
+        productor_id: document.getElementById("productorId").value.trim(),
+        tipo_evento: document.getElementById("tipoEvento").value,
+        gravedad: document.getElementById("gravedad").value,
+        latitud: Number(document.getElementById("latitud").value),
+        longitud: Number(document.getElementById("longitud").value),
+        descripcion: document.getElementById("descripcion").value.trim(),
+        foto: foto,
+        creado_en: new Date().toISOString(),
+        estado: "pendiente",
+        enviado_en: null
+      };
+
+      reportes.push(reporte);
+      guardarReportesLocales();
+      mostrarReportesLocales();
+      document.getElementById("formularioReporte").reset();
+      mostrarMensaje("Reporte guardado en el celular. Queda pendiente de envío.");
+
+      if (navigator.onLine) {
+        await sincronizarPendientes();
+      }
+    }
+
+    async function sincronizarPendientes() {
+      const pendientes = reportes.filter(reporte => reporte.estado === "pendiente");
+      if (pendientes.length === 0 || !navigator.onLine) return;
+
+      const boton = document.getElementById("sincronizar");
+      boton.disabled = true;
+
+      try {
+        const respuesta = await fetch(API_URL + "/api/sincronizar", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reportes: pendientes })
+        });
+
+        if (!respuesta.ok) throw new Error("El servidor rechazó los reportes.");
+
+        const datos = await respuesta.json();
+        const idsRecibidos = new Set(datos.ids_recibidos || []);
+
+        reportes = reportes.map(reporte => {
+          if (!idsRecibidos.has(reporte.id)) return reporte;
+          return {
+            ...reporte,
+            estado: "enviado",
+            enviado_en: new Date().toISOString()
+          };
+        });
+
+        guardarReportesLocales();
+        mostrarReportesLocales();
+        mostrarMensaje(`${idsRecibidos.size} reporte(s) sincronizado(s) correctamente.`);
+        await cargarReportesDelServidor();
+      } catch (error) {
+        mostrarMensaje("No se pudo sincronizar. Los reportes siguen guardados en el celular.", "error");
+      } finally {
+        boton.disabled = false;
+      }
+    }
+
+    async function cargarReportesDelServidor() {
+      const elemento = document.getElementById("listaServidor");
+
+      try {
+        const respuesta = await fetch(API_URL + "/api/reportes");
+        if (!respuesta.ok) throw new Error("No se pudo consultar el servidor.");
+        const datos = await respuesta.json();
+        const recibidos = datos.reportes || [];
+
+        elemento.innerHTML = recibidos.length
+          ? recibidos.map(reporte => tarjetaReporte(reporte, "Recibido")).join("")
+          : '<p class="vacio">Todavía no hay reportes sincronizados.</p>';
+      } catch (error) {
+        elemento.innerHTML = '<p class="vacio">El servidor no está disponible ahora.</p>';
+      }
+    }
+
+    document.getElementById("formularioReporte").addEventListener("submit", crearReporte);
+    document.getElementById("sincronizar").addEventListener("click", sincronizarPendientes);
+    document.getElementById("usarUbicacion").addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        mostrarMensaje("Este dispositivo no permite obtener la ubicación.", "error");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        posicion => {
+          document.getElementById("latitud").value = posicion.coords.latitude.toFixed(6);
+          document.getElementById("longitud").value = posicion.coords.longitude.toFixed(6);
+          mostrarMensaje("Ubicación cargada correctamente.");
+        },
+        () => mostrarMensaje("No se pudo obtener la ubicación. También podés escribirla manualmente.", "error")
+      );
+    });
+
+    window.addEventListener("online", actualizarEstadoConexion);
+    window.addEventListener("offline", actualizarEstadoConexion);
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("sw.js"));
+    }
+
+    mostrarReportesLocales();
+    actualizarEstadoConexion();
+    cargarReportesDelServidor();
+  </script>
+</body>
+</html>
