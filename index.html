@@ -6,7 +6,6 @@
     <meta name="theme-color" content="#065f46">
     <title>S.I.G.E.A - Sistema Integral de Gestión de Emergencias Agropecuarias</title>
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -38,11 +37,11 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        /* Hero / Cabecera */
+        /* Hero / Cabecera Profesional */
         header {
             background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
             color: var(--blanco);
-            padding: 3.5rem 1.5rem 4.5rem 1.5rem;
+            padding: 3rem 1.5rem 3.5rem 1.5rem;
             text-align: center;
             border-bottom: 5px solid #10b981;
         }
@@ -55,27 +54,25 @@
         }
 
         header p {
-            font-size: 1.1rem;
+            font-size: 1.05rem;
             font-weight: 300;
             opacity: 0.95;
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             line-height: 1.5;
         }
 
-        /* Contenedor Principal Más Compacto */
+        /* Contenedor Principal Corregido (Sin margen negativo que pise el header) */
         .contenedor {
-            max-width: 1150px;
-            margin: -2.5rem auto 3rem auto; /* Eleva el grid sobre el header */
+            max-width: 1250px;
+            margin: 2rem auto;
             padding: 0 1.5rem;
-            position: relative;
-            z-index: 10;
         }
 
         .grid-servicios {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem; /* Cuadrantes más cercanos y armónicos */
+            gap: 1.5rem; /* Cuadrantes cercanos, armónicos y sin solaparse */
         }
 
         /* Tarjetas (Cards) */
@@ -99,7 +96,7 @@
         /* Contenedor de la Imagen */
         .img-contenedor {
             width: 100%;
-            height: 170px;
+            height: 160px;
             overflow: hidden;
             position: relative;
         }
@@ -143,7 +140,7 @@
         }
 
         .tarjeta h2 {
-            font-size: 1.3rem;
+            font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 0.5rem;
             color: var(--texto-principal);
@@ -154,8 +151,8 @@
 
         .tarjeta p.descripcion {
             color: var(--texto-secundario);
-            font-size: 0.9rem;
-            margin-bottom: 1.25rem;
+            font-size: 0.88rem;
+            margin-bottom: 1.2rem;
             line-height: 1.45;
         }
 
@@ -189,10 +186,10 @@
             background-color: var(--verde-primario);
             color: var(--blanco);
             text-decoration: none;
-            padding: 0.8rem;
+            padding: 0.75rem;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             transition: background 0.3s ease;
             width: 100%;
         }
@@ -205,7 +202,6 @@
         @media (max-width: 768px) {
             header { padding: 2.5rem 1rem; }
             header h1 { font-size: 2.1rem; }
-            .contenedor { margin-top: -1rem; }
             .tarjeta-cuerpo { padding: 1.25rem; }
         }
     </style>
@@ -220,7 +216,6 @@
     <main class="contenedor">
         <div class="grid-servicios">
 
-            <!-- Módulo 1: Última Ventana -->
             <div class="tarjeta">
                 <div class="img-contenedor">
                     <span class="etiqueta-flotante logistica">Logística Predictiva</span>
@@ -240,7 +235,6 @@
                 </div>
             </div>
 
-            <!-- Módulo 2: FloodPrint AI -->
             <div class="tarjeta">
                 <div class="img-contenedor">
                     <span class="etiqueta-flotante ia">Visión Artificial</span>
@@ -260,7 +254,6 @@
                 </div>
             </div>
 
-            <!-- Módulo 3: Impacto en Cascada -->
             <div class="tarjeta">
                 <div class="img-contenedor">
                     <span class="etiqueta-flotante simulacion">Análisis Sistémico</span>
@@ -280,7 +273,6 @@
                 </div>
             </div>
 
-            <!-- Módulo 4: Sensor Humano -->
             <div class="tarjeta">
                 <div class="img-contenedor">
                     <span class="etiqueta-flotante social">Red Ciudadana (PWA)</span>
