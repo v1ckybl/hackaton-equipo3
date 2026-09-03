@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#065f46">
+    <title>S.I.G.E.A - Sistema Integral de Gestión de Emergencias Agropecuarias</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-primario: #059669; /* Emerald 600 */
+            --verde-oscuro: #065f46;   /* Emerald 800 */
+            --verde-claro: #d1fae5;    /* Emerald 100 */
+            --fondo-gris: #f3f4f6;
+            --texto-principal: #1f2937;
+            --texto-secundario: #4b5563;
+            --blanco: #ffffff;
+            --borde: #e5e7eb;
+            --sombra: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--fondo-gris);
+            color: var(--texto-principal);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Hero / Cabecera */
+        header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
+            color: var(--blanco);
+            padding: 4rem 1.5rem;
+            text-align: center;
+            border-bottom: 5px solid #10b981;
+        }
+
+        header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.15rem;
+            font-weight: 300;
+            opacity: 0.95;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+
+        /* Contenedor Principal */
+        .contenedor {
+            max-width: 1200px;
+            margin: -2rem auto 4rem auto; /* Sube un poco sobre el header */
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .grid-servicios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+        }
+
+        /* Tarjetas (Cards) */
+        .tarjeta {
+            background: var(--blanco);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--sombra);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--borde);
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--verde-primario);
+        }
+
+        /* Contenedor de la Imagen */
+        .img-contenedor {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .img-contenedor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .tarjeta:hover .img-contenedor img {
+            transform: scale(1.08); /* Efecto zoom al pasar el mouse */
+        }
+
+        .etiqueta-flotante {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ia { color: #2563eb; }
+        .logistica { color: #d97706; }
+        .social { color: #dc2626; }
+        .simulacion { color: #7c3aed; }
+
+        /* Cuerpo de la tarjeta */
+        .tarjeta-cuerpo {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .tarjeta h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--texto-principal);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tarjeta p.descripcion {
+            color: var(--texto-secundario);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        /* Lista de características */
+        .caracteristicas {
+            list-style: none;
+            margin-bottom: 2rem;
+            flex-grow: 1;
+        }
+
+        .caracteristicas li {
+            font-size: 0.85rem;
+            color: var(--texto-secundario);
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .caracteristicas li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--verde-primario);
+            font-weight: bold;
+        }
+
+        /* Botones */
+        .btn {
+            display: inline-block;
+            text-align: center;
+            background-color: var(--verde-primario);
+            color: var(--blanco);
+            text-decoration: none;
+            padding: 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--verde-oscuro);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            header { padding: 3rem 1rem; }
+            header h1 { font-size: 2.2rem; }
+            .contenedor { margin-top: -1rem; }
+            .tarjeta-cuerpo { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>S.I.G.E.A</h1>
+        <p>Sistema Integral de Gestión de Emergencias Agropecuarias. Prevención, evaluación satelital y logística inteligente frente a crisis climáticas.</p>
+    </header>
+
+    <main class="contenedor">
+        <div class="grid-servicios">
+
+            <!-- Funcionalidad 1: Última Ventana -->
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <!-- Etiqueta Flotante -->
+                    <span class="etiqueta-flotante logistica">Logística Predictiva</span>
+                    <!-- Imagen representativa -->
+                    <img src="https://images.unsplash.com/photo-1605649479383-7c8c3c1dbdb4?q=80&w=800&auto=format&fit=crop" alt="Camino rural embarrado">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>🚜 Última Ventana</h2>
+                    <p class="descripcion">
+                        Algoritmo que cruza datos meteorológicos y edafológicos (tipo de suelo) para predecir cuándo un camino de tierra quedará intransitable.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Cálculo de hora límite segura de salida.</li>
+                        <li>Protege maquinaria y ganado antes del corte.</li>
+                        <li>Transforma pronósticos en decisiones logísticas.</li>
+                    </ul>
+                    <a href="ultima-ventana.html" class="btn">Abrir Simulador de Rutas</a>
+                </div>
+            </div>
+
+            <!-- Funcionalidad 2: FloodPrint -->
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante ia">Inteligencia Artificial</span>
+                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Vista satelital de zona inundada">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>🌳 FloodPrint AI</h2>
+                    <p class="descripcion">
+                        Visión por computadora aplicada a imágenes satelitales para automatizar y auditar certificados de daño productivo al instante.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Diferencia cuerpos de agua naturales de anegamientos.</li>
+                        <li>Calcula severidad y porcentaje de hectáreas perdidas.</li>
+                        <li>Genera PDF automático para Emergencia Provincial.</li>
+                    </ul>
+                    <a href="floodprint.html" class="btn">Ingresar a FloodPrint</a>
+                </div>
+            </div>
+
+            <!-- Funcionalidad 3: Impacto Sistémico -->
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante simulacion">Análisis Sistémico</span>
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="Redes y conexiones en mapa conceptual">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>🔗 Impacto en Cascada</h2>
+                    <p class="descripcion">
+                        Simulador macroeconómico y logístico. No solo muestra el agua, muestra las cadenas de valor que quedan bloqueadas en la región.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Mapea establecimientos y familias aisladas.</li>
+                        <li>Cuantifica toneladas de cosecha bloqueada.</li>
+                        <li>Permite a Defensa Civil priorizar intervenciones.</li>
+                    </ul>
+                    <a href="impacto-sistemico.html" class="btn">Ver Mapa de Impacto</a>
+                </div>
+            </div>
+
+            <!-- Funcionalidad 4: Sensor Humano -->
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante social">Red Ciudadana (PWA)</span>
+                    <img src="https://images.unsplash.com/photo-1595995536417-7a5611488c03?q=80&w=800&auto=format&fit=crop" alt="Productor agropecuario con tecnología">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>📱 Sensor Humano</h2>
+                    <p class="descripcion">
+                        Convierte a los productores en sensores distribuidos. Funciona 100% offline y sincroniza los daños al recuperar señal de internet.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>App progresiva (PWA) para zonas rurales sin 4G.</li>
+                        <li>Geolocalización exacta de tranqueras o caminos cortados.</li>
+                        <li>Validación de confianza mediante cruce de múltiples reportes.</li>
+                    </ul>
+                    <a href="sensor-humano.html" class="btn">Abrir App de Terreno</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>
