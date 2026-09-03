@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: ultima-ventana-ml
+Version: 0.1.0
+Summary: Pipeline ML sintético de Última Ventana
+Requires-Python: <3.15,>=3.10
+Requires-Dist: matplotlib<4,>=3.8
+Requires-Dist: numpy<3,>=1.26
+Requires-Dist: pandas<3,>=2.1
+Requires-Dist: scikit-learn<2,>=1.4
+Requires-Dist: xgboost<4,>=2.1
