@@ -2,68 +2,141 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Dominio Rural — Caminos Críticos</title>
+  <title>Dominio Rural — Simulador de cortes</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
       background: #0f1115;
       color: #e6e6e6;
-      max-width: 700px;
+      max-width: 800px;
       margin: 40px auto;
       padding: 0 20px;
     }
     h1 { font-size: 1.4rem; }
-    .camino {
-      border-left: 4px solid #c0392b;
-      background: #1a1d24;
-      padding: 16px;
-      margin-bottom: 16px;
+    select, button {
+      font-size: 1rem;
+      padding: 8px 12px;
+      margin-right: 8px;
       border-radius: 6px;
+      border: 1px solid #444;
+      background: #1a1d24;
+      color: #e6e6e6;
     }
-    .camino.medio { border-left-color: #e67e22; }
-    .camino.bajo { border-left-color: #f1c40f; }
-    .titulo { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; }
-    .cadena { margin: 8px 0; line-height: 1.6; }
-    .totales { margin-top: 10px; font-size: 0.95rem; color: #aaa; }
-    .totales b { color: #e6e6e6; }
+    button { cursor: pointer; background: #c0392b; border: none; }
+    button:hover { background: #e74c3c; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-top: 24px;
+    }
+    .nodo {
+      background: #1a1d24;
+      border: 2px solid #2ecc71;
+      border-radius: 8px;
+      padding: 14px;
+      transition: all 0.3s ease;
+    }
+    .nodo.zona-segura { border-color: #3498db; }
+    .nodo.apagado {
+      border-color: #444;
+      background: #15161a;
+      opacity: 0.35;
+      filter: grayscale(1);
+    }
+    .nodo-nombre { font-weight: bold; margin-bottom: 6px; }
+    .nodo-dato { font-size: 0.85rem; color: #aaa; }
+
+    #resumen {
+      margin-top: 20px;
+      padding: 14px;
+      background: #1a1d24;
+      border-radius: 6px;
+      border-left: 4px solid #c0392b;
+      display: none;
+    }
   </style>
 </head>
 <body>
-  <h1>🚧 Caminos críticos — Dominio Rural</h1>
-  <div id="contenedor">Cargando...</div>
+  <h1>🚧 Simulador de cortes — Dominio Rural</h1>
+
+  <div>
+    <select id="selectorCamino"></select>
+    <button id="btnSimular">Simular corte</button>
+    <button id="btnReset" style="background:#555;">Restablecer</button>
+  </div>
+
+  <div id="resumen"></div>
+  <div class="grid" id="grid">Cargando...</div>
 
   <script>
-    async function cargar() {
-      const contenedor = document.getElementById('contenedor');
-      try {
-        const res = await fetch('http://localhost:3002/api/caminos-criticos');
-        const datos = await res.json();
-        contenedor.innerHTML = '';
+    const API = 'http://localhost:3002';
+    let grafo = null;
 
-        datos.forEach((item, i) => {
-          const nivel = i === 0 ? '' : i === 1 ? 'medio' : 'bajo';
-          const nombres = item.establecimientosAislados.map(e => e.nombre).join(', ');
+    async function cargarGrafo() {
+      const res = await fetch(`${API}/api/grafo`);
+      grafo = await res.json();
 
-          const div = document.createElement('div');
-          div.className = 'camino ' + nivel;
-          div.innerHTML = `
-            <div class="titulo">${item.caminoCortado} se corta</div>
-            <div class="cadena">
-              ↓ ${item.establecimientosAislados.length} establecimiento(s) aislado(s): ${nombres}<br>
-              ↓ ${item.totalCabezasGanado} cabezas de ganado sin salida<br>
-              ↓ ${item.totalCamiones} camión(es) no pueden retirar producción<br>
-              ↓ ${item.totalToneladas} toneladas de producción bloqueadas
-            </div>
-            <div class="totales">Impacto ordenado: <b>#${i + 1}</b> más crítico</div>
-          `;
-          contenedor.appendChild(div);
-        });
-      } catch (err) {
-        contenedor.innerText = 'Error al conectar con la API. ¿Está corriendo npm run dev?';
-      }
+      const selector = document.getElementById('selectorCamino');
+      selector.innerHTML = grafo.caminos
+        .map(c => `<option value="${c.id}">${c.nombre ?? c.id} (${c.desde} → ${c.hasta})</option>`)
+        .join('');
+
+      dibujarNodos([]); // arranca sin nadie apagado
     }
 
-    cargar();
+    function dibujarNodos(idsAislados) {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = grafo.nodos.map(n => {
+        const esZonaSegura = n.id === 'zona-segura';
+        const apagado = idsAislados.includes(n.id);
+        const clases = ['nodo', esZonaSegura ? 'zona-segura' : '', apagado ? 'apagado' : ''].join(' ');
+        return `
+          <div class="${clases}">
+            <div class="nodo-nombre">${n.nombre}</div>
+            ${!esZonaSegura ? `
+              <div class="nodo-dato">🐄 ${n.cabezasGanado} cabezas</div>
+              <div class="nodo-dato">🌾 ${n.toneladasProduccion} tn producción</div>
+              <div class="nodo-dato">🚛 ${n.camiones} camión(es)</div>
+            ` : `<div class="nodo-dato">Zona segura</div>`}
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function simular() {
+      const idCamino = document.getElementById('selectorCamino').value;
+      const res = await fetch(`${API}/api/simular-corte`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idCamino })
+      });
+      const resultado = await res.json();
+
+      const idsAislados = resultado.establecimientosAislados.map(e => e.id);
+      dibujarNodos(idsAislados);
+
+      const resumen = document.getElementById('resumen');
+      resumen.style.display = 'block';
+      resumen.innerHTML = `
+        <b>${idCamino}</b> se corta →
+        ${resultado.establecimientosAislados.length} establecimiento(s) aislado(s) —
+        ${resultado.totalCabezasGanado} cabezas de ganado,
+        ${resultado.totalCamiones} camión(es) y
+        ${resultado.totalToneladas} toneladas sin salida.
+      `;
+    }
+
+    function reset() {
+      dibujarNodos([]);
+      document.getElementById('resumen').style.display = 'none';
+    }
+
+    document.getElementById('btnSimular').addEventListener('click', simular);
+    document.getElementById('btnReset').addEventListener('click', reset);
+
+    cargarGrafo();
   </script>
 </body>
 </html>
