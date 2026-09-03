@@ -14,15 +14,14 @@
         :root {
             --verde-primario: #059669; /* Emerald 600 */
             --verde-oscuro: #065f46;   /* Emerald 800 */
-            --verde-hover: #047857;    /* Emerald 700 */
             --verde-claro: #d1fae5;    /* Emerald 100 */
-            --fondo-gris: #f8fafc;     /* Slate 50 - Un gris más limpio */
-            --texto-principal: #1e293b;
-            --texto-secundario: #475569;
+            --fondo-gris: #f3f4f6;
+            --texto-principal: #1f2937;
+            --texto-secundario: #4b5563;
             --blanco: #ffffff;
-            --borde: #e2e8f0;
-            --sombra-suave: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            --sombra-fuerte: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --borde: #e5e7eb;
+            --sombra: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 16px;
         }
 
         * {
@@ -35,29 +34,24 @@
             background-color: var(--fondo-gris);
             color: var(--texto-principal);
             font-family: 'Inter', sans-serif;
-            line-height: 1.7;
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
         }
 
         /* Hero / Cabecera Profesional */
         header {
             background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
             color: var(--blanco);
-            padding: 5rem 2rem; /* Más relleno aquí */
+            padding: 4rem 1.5rem 5rem 1.5rem;
             text-align: center;
-            border-bottom: 6px solid #10b981;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border-bottom: 5px solid #10b981;
         }
 
         header h1 {
             font-size: 3rem;
-            font-weight: 800;
+            font-weight: 700;
             margin-bottom: 1rem;
             letter-spacing: -1px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         header p {
@@ -71,25 +65,24 @@
 
         /* Contenedor Principal */
         .contenedor {
-            max-width: 1300px;
-            margin: 4rem auto; /* Más respiro vertical */
+            max-width: 1400px;
+            margin: 3rem auto;
             padding: 0 2rem;
-            flex-grow: 1;
         }
 
         .grid-servicios {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); /* Tarjetas un poco más anchas */
-            gap: 2rem; /* Mayor separación entre tarjetas */
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
         }
 
         /* Tarjetas (Cards) */
         .tarjeta {
             background: var(--blanco);
-            border-radius: 16px; /* Bordes más suaves */
+            border-radius: var(--radius);
             overflow: hidden;
-            box-shadow: var(--sombra-suave);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--sombra);
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
             border: 1px solid var(--borde);
@@ -97,14 +90,14 @@
 
         .tarjeta:hover {
             transform: translateY(-8px);
-            box-shadow: var(--sombra-fuerte);
-            border-color: var(--verde-claro);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border-color: var(--verde-primario);
         }
 
         /* Contenedor de la Imagen */
         .img-contenedor {
             width: 100%;
-            height: 200px; /* Más altura de imagen para más "relleno" */
+            height: 200px;
             overflow: hidden;
             position: relative;
         }
@@ -113,7 +106,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.6s ease;
+            transition: transform 0.5s ease;
         }
 
         .tarjeta:hover .img-contenedor img {
@@ -125,14 +118,14 @@
             top: 15px;
             right: 15px;
             background: rgba(255, 255, 255, 0.95);
-            padding: 0.4rem 0.8rem;
-            border-radius: 20px;
+            padding: 0.4rem 0.9rem;
+            border-radius: 25px;
             font-size: 0.75rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            backdrop-filter: blur(4px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            z-index: 10;
         }
 
         .ia { color: #2563eb; }
@@ -142,14 +135,14 @@
 
         /* Cuerpo de la tarjeta */
         .tarjeta-cuerpo {
-            padding: 2rem; /* Mucho más relleno interno */
+            padding: 2rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
         .tarjeta h2 {
-            font-size: 1.35rem;
+            font-size: 1.4rem;
             font-weight: 700;
             margin-bottom: 0.75rem;
             color: var(--texto-principal);
@@ -162,7 +155,8 @@
             color: var(--texto-secundario);
             font-size: 0.95rem;
             margin-bottom: 1.5rem;
-            line-height: 1.6;
+            line-height: 1.55;
+            flex-grow: 0;
         }
 
         /* Lista de características */
@@ -173,7 +167,7 @@
         }
 
         .caracteristicas li {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: var(--texto-secundario);
             margin-bottom: 0.6rem;
             position: relative;
@@ -186,7 +180,6 @@
             left: 0;
             color: var(--verde-primario);
             font-weight: bold;
-            font-size: 1.1rem;
         }
 
         /* Botones */
@@ -196,44 +189,40 @@
             background-color: var(--verde-primario);
             color: var(--blanco);
             text-decoration: none;
-            padding: 0.85rem 1rem; /* Botones más robustos */
+            padding: 0.9rem;
             border-radius: 10px;
             font-weight: 600;
             font-size: 0.95rem;
-            transition: all 0.3s ease;
+            transition: background 0.3s ease;
             width: 100%;
             border: none;
             cursor: pointer;
         }
 
         .btn:hover {
-            background-color: var(--verde-hover);
-            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
-        }
-        
-        /* Footer para cerrar el diseño */
-        footer {
-            background-color: #1e293b;
-            color: #94a3b8;
-            text-align: center;
-            padding: 2rem;
-            margin-top: auto;
-            font-size: 0.9rem;
+            background-color: var(--verde-oscuro);
         }
 
         /* Responsive */
+        @media (max-width: 1024px) {
+            header { padding: 3.5rem 1.5rem 4rem 1.5rem; }
+            header h1 { font-size: 2.6rem; }
+            .grid-servicios { gap: 2rem; }
+        }
+
         @media (max-width: 768px) {
-            header { padding: 3rem 1.5rem; }
+            header { padding: 3rem 1rem; }
             header h1 { font-size: 2.2rem; }
-            .contenedor { margin: 2rem auto; padding: 0 1rem; }
+            header p { font-size: 1.05rem; }
             .tarjeta-cuerpo { padding: 1.5rem; }
+            .img-contenedor { height: 180px; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🌱 S.I.G.E.A</h1>
+        <h1>S.I.G.E.A</h1>
         <p>Sistema Integral de Gestión de Emergencias Agropecuarias. Plataforma multi-módulo de alta precisión que combina inteligencia artificial satelital, analítica predictiva de caminos y redes ciudadanas de terreno para mitigar el impacto de crisis climáticas en la producción.</p>
     </header>
 
@@ -242,86 +231,86 @@
 
             <div class="tarjeta">
                 <div class="img-contenedor">
-                    <span class="etiqueta-flotante logistica">🚚 Logística Predictiva</span>
-                    <img src="https://images.unsplash.com/photo-1605649479383-7c8c3c1dbdb4?q=80&w=800&auto=format&fit=crop" alt="Camino rural embarrado">
+                    <span class="etiqueta-flotante logistica">Logística Predictiva</span>
+                    <img src="https://images.unsplash.com/photo-1549488344-1f9b8d2bd1f3?q=80&w=800&auto=format&fit=crop" alt="Camino rural embarrado">
                 </div>
                 <div class="tarjeta-cuerpo">
-                    <h2>🚜⛈️ Última Ventana</h2>
+                    <h2>🚧 Última Ventana / Evacuación Táctica</h2>
                     <p class="descripcion">
-                        Algoritmo inteligente que cruza pronósticos meteorológicos en tiempo real con la capacidad de infiltración del suelo. Anticipa con precisión el corte de caminos rurales para evitar pérdidas.
+                        Algoritmo avanzado que fusiona pronósticos meteorológicos de precisión a 72hs con coeficientes de infiltración edafológica para anticipar el colapso de caminos rurales críticas.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Cálculo exacto de la hora límite segura de salida.</li>
-                        <li>Protección anticipada de maquinaria y ganado.</li>
-                        <li>Transforma datos climáticos en logística operativa.</li>
+                        <li>Cálculo exacto de la Hora Límite Segura de Salida para vehículos pesados.</li>
+                        <li>Modelado de transitabilidad de caminos de tierra basado en suelo.</li>
+                        <li>Algoritmo de Priorización de Evacuación de ganado y maquinaria.</li>
+                        <li>Alertas automáticas vía WhatsApp a productores en riesgo inminente.</li>
                     </ul>
-                    <a href="ultima-ventana.html" class="btn">Abrir Simulador de Rutas</a>
+                    <a href="ultima-ventana.html" class="btn">Abrir Simulador de Rutas y Cortes</a>
                 </div>
             </div>
 
             <div class="tarjeta">
                 <div class="img-contenedor">
-                    <span class="etiqueta-flotante ia">🧠 Visión Artificial</span>
-                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Zona de cultivo anegada">
+                    <span class="etiqueta-flotante ia">Visión Artificial</span>
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="IA satelital analizando inundación">
                 </div>
                 <div class="tarjeta-cuerpo">
-                    <h2>🛰️🤖 FloodPrint AI</h2>
+                    <h2>🛰️ FloodPrint AI / Auditoría Satelital Automatizada</h2>
                     <p class="descripcion">
-                        Sistema de procesamiento automatizado de imágenes satelitales mediante Inteligencia Artificial. Audita daños productivos al instante y facilita la emisión de certificados de emergencia.
+                        Procesamiento automatizado de imágenes satelitales (Sentinel/Planet) mediante Deep Learning y OpenCV para auditar daños productivos, diferenciar superficies de agua y validar reclamos al instante.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Diferenciación espectral de cuerpos de agua.</li>
-                        <li>Cálculo automatizado de hectáreas perdidas.</li>
-                        <li>Generación de PDF oficial para Emergencia.</li>
+                        <li>Identificación y clasificación de cuerpos de agua por espectrometría.</li>
+                        <li>Cuantificación automatizada de hectáreas de cultivo perdido y reducción de rinde.</li>
+                        <li>Generación de Certificado de Daño Oficial (PDF) para trámites de emergencia.</li>
+                        <li>Historial visual completo de la evolución de la inundación.</li>
                     </ul>
-                    <a href="floodprint.html" class="btn">Ingresar a FloodPrint</a>
+                    <a href="floodprint.html" class="btn">Ingresar a FloodPrint AI Dashboard</a>
                 </div>
             </div>
 
             <div class="tarjeta">
                 <div class="img-contenedor">
-                    <span class="etiqueta-flotante simulacion">📊 Análisis Sistémico</span>
-                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="Redes globales conectadas">
+                    <span class="etiqueta-flotante simulacion">Análisis Sistémico</span>
+                    <img src="https://images.unsplash.com/photo-1596720499029-873b184f98df?q=80&w=800&auto=format&fit=crop" alt="Red de impacto sistémico">
                 </div>
                 <div class="tarjeta-cuerpo">
-                    <h2>🔗📉 Impacto en Cascada</h2>
+                    <h2>🔗 Impacto en Cascada y Simulación de Aislamiento</h2>
                     <p class="descripcion">
-                        Simulador macroeconómico avanzado que mapea cadenas de valor interrumpidas. Identifica establecimientos productivos aislados y cuantifica las pérdidas económicas colaterales.
+                        Modelo macroeconómico-territorial que mapea la interrupción de cadenas de valor y los establecimientos productivos que quedan completamente aislados de la infraestructura crítica.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Mapeo dinámico de familias y zonas incomunicadas.</li>
-                        <li>Cuantificación de toneladas de cosecha bloqueada.</li>
-                        <li>Optimización de recursos para Defensa Civil.</li>
+                        <li>Identificación dinámica de familias rurales y zonas incomunicadas en tiempo real.</li>
+                        <li>Cálculo de toneladas de cosecha bloqueada y impacto económico directo regional.</li>
+                        <li>Herramienta de optimización de rutas de rescate y suministro para Defensa Civil.</li>
+                        <li>Simulación de riesgo de desabastecimiento de insumos y materia prima.</li>
                     </ul>
-                    <a href="impacto-sistemico.html" class="btn">Ver Mapa de Impacto</a>
+                    <a href="impacto-sistemico.html" class="btn">Ver Mapa de Impacto Sistémico</a>
                 </div>
             </div>
 
             <div class="tarjeta">
                 <div class="img-contenedor">
-                    <span class="etiqueta-flotante social">👥 Red Ciudadana (PWA)</span>
-                    <img src="https://images.unsplash.com/photo-1595995536417-7a5611488c03?q=80&w=800&auto=format&fit=crop" alt="Productor trabajando en el campo">
+                    <span class="etiqueta-flotante social">Red Ciudadana (PWA)</span>
+                    <img src="https://images.unsplash.com/photo-1621252179027-94459d278660?q=80&w=800&auto=format&fit=crop" alt="Productor trabajando en el campo">
                 </div>
                 <div class="tarjeta-cuerpo">
-                    <h2>📱🧑‍🌾 Sensor Humano</h2>
+                    <h2>📱 Sensor Humano / Reporte Descentralizado en Terreno</h2>
                     <p class="descripcion">
-                        Aplicación móvil descentralizada diseñada para el productor rural. Opera 100% offline en el terreno y sincroniza reportes de daños automáticamente al recuperar la conectividad.
+                        Aplicación móvil descentralizada (PWA) diseñada para el productor. Opera 100% offline en zonas críticas y sincroniza reportes multimedia al recuperar conectividad 4G.
                     </p>
                     <ul class="caracteristicas">
-                        <li>Diseñada para zonas rurales sin cobertura 4G.</li>
-                        <li>Geolocalización precisa de tranqueras y daños.</li>
-                        <li>Validación cruzada de reportes comunitarios.</li>
+                        <li>Geolocalización precisa de tranqueras, caminos cortados, daños y ganado aislado.</li>
+                        <li>Reportes multimedia con timestamps y geotags validados por Blockchain.</li>
+                        <li>Interfaz optimizada para bajo consumo de batería y visibilidad en campo.</li>
+                        <li>Validación comunitaria cruzada de reportes para alertas tempranas de vecinos.</li>
                     </ul>
-                    <a href="sensor-humano.html" class="btn">Abrir App de Terreno</a>
+                    <a href="sensor-humano.html" class="btn">Abrir App de Terreno (PWA)</a>
                 </div>
             </div>
 
         </div>
     </main>
-
-    <footer>
-        <p>&copy; 2026 S.I.G.E.A - Sistema Integral de Gestión de Emergencias Agropecuarias. Todos los derechos reservados.</p>
-    </footer>
 
 </body>
 </html>
