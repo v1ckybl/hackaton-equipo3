@@ -6,35 +6,31 @@
     <meta name="theme-color" content="#065f46">
     <title>FloodPrint AI - S.I.G.E.A</title>
     
+    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Librería html2pdf para generar el PDF automáticamente -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root {
-            --verde-primario: #059669;
-            --verde-oscuro: #065f46;
-            --verde-claro: #d1fae5;
-            --fondo-gris: #f3f4f6;
-            --texto-principal: #1f2937;
-            --texto-secundario: #4b5563;
-            --blanco: #ffffff;
-            --borde: #e5e7eb;
-            --rojo-alerta: #dc2626;
-            --naranja-advertencia: #d97706;
-            --sombra: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --warning: #e67e22;
+            --background: #f4f7f6;
+            --card-bg: #ffffff;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
-            background-color: var(--fondo-gris);
-            color: var(--texto-principal);
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--background);
+            margin: 0;
+            padding: 0;
+            color: var(--primary);
         }
-
         header {
             background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
             color: var(--blanco);
@@ -44,26 +40,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
         }
-
-        .header-titulo { display: flex; align-items: center; gap: 12px; margin: 0 auto; }
-        header h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.5px; }
-        header span { background: rgba(255, 255, 255, 0.2); padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.85rem; }
-
-        .btn-volver {
-            background: rgba(255, 255, 255, 0.15);
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            transition: background 0.3s;
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
         }
-        .btn-volver:hover { background: rgba(255, 255, 255, 0.3); }
-
         .container {
             max-width: 1100px;
             margin: 2.5rem auto 1.5rem auto;
@@ -72,88 +53,100 @@
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
         }
-
         .card {
             background-color: var(--blanco);
             border-radius: 16px;
             padding: 2rem;
-            box-shadow: var(--sombra);
-            border: 1px solid var(--borde);
-            display: flex;
-            flex-direction: column;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
         }
-
         .card h2 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--texto-principal);
-            margin-bottom: 1.25rem;
-            border-bottom: 2px solid var(--fondo-gris);
-            padding-bottom: 0.75rem;
+            margin-top: 0;
+            border-bottom: 2px solid var(--background);
+            padding-bottom: 0.5rem;
+            font-size: 1.2rem;
         }
-
+        input[type="file"], button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+        #resultado {
+            display: none;
+        }
+        .metric-list {
+            list-style: none;
+            padding: 0;
+        }
+        .metric-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .metric-list li span:first-child {
+            font-weight: 600;
+            color: #555;
+        }
+        .severidad-alta {
+            color: var(--danger);
+            font-weight: bold;
+            background: #fadbd8;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .severidad-media {
+            color: var(--warning);
+            font-weight: bold;
+            background: #fdebd0;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .btn-success {
+            background-color: var(--success);
+        }
+        .btn-success:hover {
+            background-color: #219a52;
+        }
         .map-placeholder {
             width: 100%;
             height: 180px;
-            background-color: #f9fafb;
-            border-radius: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: var(--texto-secundario);
-            font-weight: 500;
-            margin-bottom: 1.25rem;
-            border: 2px dashed #cbd5e1;
-            text-align: center;
-            padding: 1rem;
-            gap: 8px;
+            color: #7f8c8d;
+            margin-bottom: 1rem;
+            background-image: url('https://www.transparenttextures.com/patterns/grid-me.png');
         }
-
-        .map-placeholder svg { width: 36px; height: 36px; stroke: var(--verde-primario); }
-
-        label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--texto-secundario); }
-        input[type="file"] { width: 100%; padding: 10px; background: #f9fafb; border-radius: 8px; border: 1px solid var(--borde); font-size: 0.9rem; cursor: pointer; margin-bottom: 1rem; }
-
-        button { width: 100%; padding: 0.9rem; border-radius: 8px; border: none; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .btn-analizar { background-color: var(--verde-primario); color: white; margin-top: 0.5rem; }
-        .btn-analizar:hover { background-color: var(--verde-oscuro); }
-
-        #loader { display: none; text-align: center; margin: 1.5rem 0; color: var(--verde-primario); font-weight: 600; }
-        #resultado { display: none; background: #ffffff; border-left: 6px solid var(--verde-primario); }
-
-        .card-vacia { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: var(--texto-secundario); background: #fafafa; border: 2px dashed var(--borde); }
-        .card-vacia p { font-size: 0.95rem; max-width: 280px; margin-top: 0.5rem; }
-
-        .metric-list { list-style: none; padding: 0; margin-bottom: 1.5rem; }
-        .metric-list li { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--borde); font-size: 0.95rem; }
-        .metric-list li span:first-child { font-weight: 600; color: var(--texto-secundario); }
-
-        .severidad-alta { color: var(--rojo-alerta); font-weight: 700; background: #fee2e2; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; }
-        .severidad-media { color: var(--naranja-advertencia); font-weight: 700; background: #fef3c7; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; }
-        .severidad-baja { color: var(--verde-oscuro); font-weight: 700; background: var(--verde-claro); padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; }
-
-        .btn-success { background-color: #2563eb; color: white; }
-        .btn-success:hover { background-color: #1d4ed8; }
-
-        .seccion-pruebas { max-width: 1100px; margin: 0 auto 3rem auto; padding: 0 1.5rem; }
-        .card-pruebas { background: var(--blanco); border-radius: 16px; padding: 2rem; box-shadow: var(--sombra); border: 1px solid var(--borde); }
-        .card-pruebas h3 { font-size: 1.2rem; color: var(--texto-principal); margin-bottom: 0.5rem; }
-        .card-pruebas p { font-size: 0.9rem; color: var(--texto-secundario); margin-bottom: 1.5rem; }
-
-        .grid-muestras { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-        .muestra-item { background: #f9fafb; border: 1px solid var(--borde); border-radius: 10px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; display: flex; flex-direction: column; }
-        .muestra-item:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); border-color: var(--verde-primario); }
-        .muestra-item img { width: 100%; height: 120px; object-fit: cover; }
-        .muestra-info { padding: 0.8rem; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
-        .muestra-info h4 { font-size: 0.9rem; margin-bottom: 0.3rem; color: var(--texto-principal); }
-        .muestra-info span { font-size: 0.75rem; color: var(--texto-secundario); }
-
-        .btn-test { margin-top: 0.6rem; background: var(--verde-claro); color: var(--verde-oscuro); padding: 0.4rem; font-size: 0.8rem; border-radius: 6px; font-weight: 600; border: none; width: 100%; cursor: pointer; }
-        .btn-test:hover { background: var(--verde-primario); color: white; }
-
-        .no-print { display: block; }
-        @media (max-width: 768px) { .container { grid-template-columns: 1fr; } header { flex-direction: column; text-align: center; } }
+        
+        /* Ocultar elementos al imprimir el PDF */
+        .no-print {
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -184,19 +177,14 @@
             <div id="loader">Analizando matriz de píxeles y espectro hídrico...</div>
         </div>
 
-        <div>
-            <div class="card card-vacia" id="card-vacia" style="height: 100%;">
-                <svg width="48" height="48" fill="none" stroke="#9ca3af" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-                <h3 style="margin-top: 10px; color: var(--texto-principal);">Sin reporte generado</h3>
-                <p>Sube una imagen o selecciona una muestra de prueba abajo para emitir el certificado automático.</p>
+        <!-- Columna de Resultados Dinámicos (Esta es la que se convertirá en PDF) -->
+        <div class="card" id="resultado">
+            <!-- Título oficial para el PDF -->
+            <div id="pdf-header" style="display:none; text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #2c3e50; margin: 0;">Certificado de Emergencia Agropecuaria</h1>
+                <p style="color: #7f8c8d; font-size: 0.9rem;">Emitido por FloodPrint AI - Provincia de Corrientes</p>
+                <hr>
             </div>
-
-            <div class="card" id="resultado">
-                <div id="pdf-header" style="display:none; text-align: center; margin-bottom: 20px;">
-                    <h1 style="color: var(--verde-oscuro); margin: 0; font-size: 1.4rem;">Certificado de Emergencia Agropecuaria</h1>
-                    <p style="color: var(--texto-secundario); font-size: 0.85rem; margin-top: 4px;">Emitido por FloodPrint AI — S.I.G.E.A</p>
-                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
-                </div>
 
                 <h2>2. Reporte Automático de Daños</h2>
                 <ul class="metric-list">
@@ -207,52 +195,9 @@
                     <li><span>Daño productivo estimado:</span> <span id="val-dano" style="font-weight: 700; color: var(--rojo-alerta);">0%</span></li>
                 </ul>
 
-                <button class="btn-success no-print" id="btn-pdf" onclick="generarPDF()">
-                    📄 Generar Declaración de Emergencia (PDF)
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="seccion-pruebas">
-        <div class="card-pruebas">
-            <h3>🚀 Banco de Pruebas Rápidas (Demo Hackathon)</h3>
-            <p>Haz clic en cualquiera de estas imágenes satelitales preconfiguradas para probar el motor de visión por computadora:</p>
-            
-            <div class="grid-muestras">
-                <div class="muestra-item" onclick="probarPreset('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop', 'Zona Inundada / Cultivos')">
-                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Inundación">
-                    <div class="muestra-info">
-                        <div>
-                            <h4>Lote Rural Anegado</h4>
-                            <span>Simula exceso hídrico en producción</span>
-                        </div>
-                        <button class="btn-test">Probar IA</button>
-                    </div>
-                </div>
-
-                <div class="muestra-item" onclick="probarPreset('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop', 'Campo Normal / Pastura')">
-                    <img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop" alt="Campo Normal">
-                    <div class="muestra-info">
-                        <div>
-                            <h4>Establecimiento Sano</h4>
-                            <span>Pasturas y campo natural óptimo</span>
-                        </div>
-                        <button class="btn-test">Probar IA</button>
-                    </div>
-                </div>
-
-                <div class="muestra-item" onclick="probarPreset('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop', 'Foresto-industria')">
-                    <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop" alt="Bosque">
-                    <div class="muestra-info">
-                        <div>
-                            <h4>Foresto-Industria</h4>
-                            <span>Masa arbórea densa (Pino/Eucalipto)</span>
-                        </div>
-                        <button class="btn-test">Probar IA</button>
-                    </div>
-                </div>
-            </div>
+            <button class="btn-success no-print" id="btn-pdf" onclick="generarPDF()">
+                📄 Generar Declaración de Emergencia (PDF)
+            </button>
         </div>
     </div>
 
@@ -271,30 +216,7 @@
             }
             const formData = new FormData();
             formData.append("file", fileInput.files[0]);
-            ejecutarAnalisisAPI(formData, fileInput.files[0].name);
-        }
 
-        async function probarPreset(urlImagen, nombrePreset) {
-            const mapText = document.getElementById('map-text');
-            mapText.innerText = `Cargando muestra: ${nombrePreset}...`;
-
-            try {
-                const respuesta = await fetch(urlImagen);
-                const blob = await respuesta.blob();
-                const archivo = new File([blob], `${nombrePreset.replace(/\s+/g, '_')}.jpg`, { type: "image/jpeg" });
-
-                const formData = new FormData();
-                formData.append("file", archivo);
-
-                mapText.innerText = `Muestra lista: ${nombrePreset}`;
-                ejecutarAnalisisAPI(formData, nombrePreset);
-            } catch (error) {
-                alert("No se pudo cargar la imagen de prueba por restricciones de red/CORS. Sube una foto desde tu equipo.");
-                mapText.innerText = "Error cargando muestra preset.";
-            }
-        }
-
-        async function ejecutarAnalisisAPI(formData, nombreOrigen) {
             const btn = document.getElementById('btn-analizar');
             const loader = document.getElementById('loader');
             const resultado = document.getElementById('resultado');
@@ -325,6 +247,7 @@
                     btn.style.display = 'block';
                     btn.innerText = "Analizar Otra Imagen";
                     
+                    // Rellenar métricas reales que devuelve tu API de Python
                     document.getElementById('val-sup').innerText = data.datos.superficie_total_ha + " ha";
                     document.getElementById('val-afectada').innerText = data.datos.area_afectada_ha + " ha";
                     document.getElementById('val-cultivo').innerText = data.datos.cultivo; 
@@ -353,6 +276,7 @@
             }
         }
 
+        // Función para generar el PDF
         function generarPDF() {
             document.getElementById('pdf-header').style.display = 'block';
             document.getElementById('btn-pdf').style.display = 'none';
