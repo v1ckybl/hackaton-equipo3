@@ -47,9 +47,38 @@ class ManejadorDominioRural(BaseHTTPRequestHandler):
 
         return datos
 
-    def do_GET(self) -> None:  # noqa: N802
+    def do_GET(self) -> None:
         ruta = urlparse(self.path).path
 
+        # 1. Servir el Dashboard Principal S.I.G.E.A (tu index.html)
+        if ruta == "/" or ruta == "/index.html":
+            try:
+                # Asegúrate de que el archivo index.html esté en la misma carpeta en Render
+                with open("index.html", "rb") as archivo:
+                    cuerpo = archivo.read()
+                self.send_response(200)
+                self.send_header("Content-Type", "text/html; charset=utf-8")
+                self.send_header("Content-Length", str(len(cuerpo)))
+                self.end_headers()
+                self.wfile.write(cuerpo)
+            except FileNotFoundError:
+                self.send_error(404, "No se encontró el archivo index.html")
+            return
+
+        # 2. Servir la Interfaz de Dominó Rural (generada desde Python)
+        if ruta == "/domino":
+            # Importamos la función que genera el HTML del simulador (del paso anterior)
+            from domino_rural_interfaz import obtener_html
+            
+            cuerpo = obtener_html().encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(cuerpo)))
+            self.end_headers()
+            self.wfile.write(cuerpo)
+            return
+
+        # 3. Mantener las rutas de la API original intactas
         if ruta == "/api/caminos-criticos":
             resultado = detectar_caminos_criticos(grafo_ejemplo)
             self.enviar_json([resultado_a_dict(item) for item in resultado])
