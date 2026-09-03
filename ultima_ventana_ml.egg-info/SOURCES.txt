@@ -1,5 +1,6 @@
 README.md
 pyproject.toml
+tests/test_backend_api.py
 tests/test_colab_notebooks.py
 tests/test_train_synthetic_v1.py
 ultima_ventana_ml/__init__.py

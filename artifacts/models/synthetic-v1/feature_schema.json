@@ -1,0 +1,66 @@
+{
+  "features": [
+    {
+      "max": 200.0,
+      "min": 0.0,
+      "name": "rain_24h_mm",
+      "position": 1,
+      "type": "float64",
+      "unit": "mm"
+    },
+    {
+      "max": 400.0,
+      "min": 0.0,
+      "name": "rain_72h_mm",
+      "position": 2,
+      "type": "float64",
+      "unit": "mm"
+    },
+    {
+      "max": 150.0,
+      "min": 0.0,
+      "name": "forecast_rain_6h_mm",
+      "position": 3,
+      "type": "float64",
+      "unit": "mm"
+    },
+    {
+      "max": 250.0,
+      "min": 0.0,
+      "name": "forecast_rain_12h_mm",
+      "position": 4,
+      "type": "float64",
+      "unit": "mm"
+    },
+    {
+      "max": 120.0,
+      "min": 20.0,
+      "name": "elevation_mean_m",
+      "position": 5,
+      "type": "float64",
+      "unit": "m"
+    },
+    {
+      "max": 10.0,
+      "min": 0.0,
+      "name": "slope_mean_pct",
+      "position": 6,
+      "type": "float64",
+      "unit": "percent"
+    },
+    {
+      "max": 1.0,
+      "min": 0.0,
+      "name": "water_coverage_100m_ratio",
+      "position": 7,
+      "type": "float64",
+      "unit": "ratio"
+    }
+  ],
+  "target": {
+    "horizon_hours": 6,
+    "name": "intransitable_within_6h",
+    "type": "binary"
+  },
+  "version": "v1"
+}

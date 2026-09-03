@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Demo sintética de riesgo de anegamiento en caminos rurales">
+  <title>Última Ventana · Demo</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">MODELO PREDICTIVO · DEMO SINTÉTICA</p>
+      <h1>Última Ventana</h1>
+      <p>Convertimos un pronóstico de lluvia en rutas de riesgo y tiempo disponible para actuar.</p>
+    </div>
+    <div id="model-status" class="status status-loading">Comprobando modelo…</div>
+  </header>
+
+  <main>
+    <section class="panel controls-panel">
+      <div class="section-heading">
+        <span>01</span>
+        <div><h2>Ubicación</h2><p>Las rutas de demo se posicionarán alrededor de este punto.</p></div>
+      </div>
+      <div class="location-row">
+        <label>Latitud<input id="latitude" type="number" step="0.0001" value="-27.4692"></label>
+        <label>Longitud<input id="longitude" type="number" step="0.0001" value="-58.8306"></label>
+        <button id="geolocate" class="button secondary" type="button">Usar mi ubicación</button>
+      </div>
+      <p id="location-message" class="helper">Ubicación de respaldo: Corrientes.</p>
+
+      <div class="section-heading forecast-heading">
+        <span>02</span>
+        <div><h2>Pronóstico simulado</h2><p>Elegí un escenario o ajustá los milímetros manualmente.</p></div>
+      </div>
+      <div id="presets" class="preset-row">
+        <button class="preset" data-preset="dry" type="button">Seco</button>
+        <button class="preset" data-preset="moderate" type="button">Moderado</button>
+        <button class="preset active" data-preset="storm" type="button">Tormenta</button>
+      </div>
+      <div class="forecast-grid">
+        <label>Lluvia 24 h <span>mm</span><input id="rain24" type="number" min="0" max="200"></label>
+        <label>Lluvia 72 h <span>mm</span><input id="rain72" type="number" min="0" max="400"></label>
+        <label>Pronóstico 6 h <span>mm</span><input id="forecast6" type="number" min="0" max="150"></label>
+        <label>Pronóstico 12 h <span>mm</span><input id="forecast12" type="number" min="0" max="250"></label>
+      </div>
+      <button id="analyze" class="button primary" type="button" disabled>Lanzar pronóstico y analizar</button>
+      <p id="form-error" class="error" role="alert"></p>
+    </section>
+
+    <section id="results" class="results hidden" aria-live="polite">
+      <div id="trigger-card" class="trigger-card"></div>
+      <div id="alerts"></div>
+      <div class="result-layout">
+        <article class="panel map-panel">
+          <div class="section-heading"><span>03</span><div><h2>Rutas evaluadas</h2><p>Mapa esquemático, no cartografía real.</p></div></div>
+          <svg id="route-map" viewBox="0 0 800 500" role="img" aria-label="Rutas simuladas coloreadas por riesgo">
+            <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" stroke-width="1"/></pattern></defs>
+            <rect width="800" height="500" class="map-grid" fill="url(#grid)"></rect>
+            <g id="route-layer"></g>
+          </svg>
+          <div class="legend"><span class="low">Bajo</span><span class="moderate">Moderado</span><span class="high">Alto</span><span class="critical">Crítico</span></div>
+        </article>
+        <div id="route-cards" class="route-cards"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><strong>Importante:</strong> rutas, terreno y pronóstico son simulados. No usar para decisiones reales.</footer>
+  <script src="/static/app.js" defer></script>
+</body>
+</html>

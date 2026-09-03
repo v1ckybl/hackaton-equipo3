@@ -13,6 +13,7 @@ __pycache__/
 data/raw/
 data/interim/
 data/processed/
+artifacts/source/*.zip
 
 .DS_Store
 Thumbs.db

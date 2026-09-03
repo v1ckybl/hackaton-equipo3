@@ -78,3 +78,41 @@ cálculo demostrativo de la última salida.
 Los scripts `scripts/generate_synthetic_v1.py` y
 `scripts/train_synthetic_v1.py` se conservan como entradas de automatización,
 pero los notebooks son la interfaz soportada para ejecutar el flujo.
+
+## Demo web FastAPI
+
+La demo web consume el modelo preentrenado de Colab y combina un pronóstico
+simulado con tres rutas sintéticas posicionadas alrededor de la ubicación del
+usuario. La ubicación no es una feature del modelo: sirve para ubicar las rutas;
+el predictor siempre recibe las siete variables del contrato v1.
+
+La aplicación incluye:
+
+- frontend HTML/CSS/JavaScript servido por FastAPI;
+- presets de pronóstico seco, moderado y tormenta;
+- mapa SVG esquemático sin mapas ni servicios externos;
+- riesgo por ruta, segmento crítico, hora crítica y última salida;
+- endpoints `/api/health`, `/api/predict`, `/api/demo/config` y
+  `/api/demo/analyze`;
+- documentación interactiva en `/docs`.
+
+Los artefactos desplegables están en `artifacts/models/synthetic-v1/`. El ZIP
+completo se conserva localmente en `artifacts/source/` y está ignorado por Git.
+
+### Desplegar en Render
+
+1. Versionar y subir el backend, `render.yaml` y los artefactos del modelo.
+2. En Render, crear un **Blueprint** apuntando al repositorio.
+3. Confirmar el servicio `ultima-ventana-demo` y el plan gratuito.
+4. Esperar que `/api/health` responda `status: ok`.
+5. Abrir la URL pública y ejecutar el preset **Tormenta**.
+
+Render utilizará:
+
+```text
+Build: pip install . -r requirements-web.txt
+Start: uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+```
+
+Las rutas, el terreno, el pronóstico y los resultados son exclusivamente una
+demostración sintética y no deben interpretarse como información vial real.
