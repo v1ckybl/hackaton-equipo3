@@ -2,88 +2,123 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Dominio Rural — Simulador de cortes</title>
-  <style>
-    body {
-      font-family: system-ui, sans-serif;
-      background: #0f1115;
-      color: #e6e6e6;
-      max-width: 850px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
-    h1 { font-size: 1.4rem; }
-    select, button {
-      font-size: 1rem;
-      padding: 8px 12px;
-      margin-right: 8px;
-      border-radius: 6px;
-      border: 1px solid #444;
-      background: #1a1d24;
-      color: #e6e6e6;
-    }
-    button { cursor: pointer; background: #c0392b; border: none; }
-    button:hover { background: #e74c3c; }
-    #btnReset { background: #555; }
-
-    svg { margin-top: 24px; background: #15161a; border-radius: 8px; }
-
-    .linea { stroke: #2ecc71; stroke-width: 4; transition: all 0.3s ease; }
-    .linea.cortada { stroke: #c0392b; stroke-dasharray: 8 6; }
-
-    .nodo-circulo { fill: #1a1d24; stroke: #2ecc71; stroke-width: 3; transition: all 0.3s ease; }
-    .nodo-circulo.zona-segura { stroke: #3498db; }
-    .nodo-circulo.apagado { fill: #0f1115; stroke: #444; opacity: 0.35; }
-
-    .nodo-texto { fill: #e6e6e6; font-size: 12px; font-weight: bold; text-anchor: middle; }
-    .nodo-dato { fill: #aaa; font-size: 10px; text-anchor: middle; }
-    .nodo-grupo.apagado .nodo-texto,
-    .nodo-grupo.apagado .nodo-dato { opacity: 0.35; }
-
-    #resumen {
-      margin-top: 16px;
-      padding: 14px;
-      background: #1a1d24;
-      border-radius: 6px;
-      border-left: 4px solid #c0392b;
-      display: none;
-    }
-  </style>
+  <title>Dominio Rural — Panel de Impacto por Corte de Caminos</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>🚧 Simulador de cortes — Dominio Rural</h1>
+  <h1>🚧 Dominio Rural — Impacto por Corte de Caminos</h1>
+  <p id="subtitulo">Simulá el corte de un camino y visualizá el efecto dominó: todo lo que queda aislado o destruido en la cadena.</p>
 
-  <div>
-    <select id="selectorCamino"></select>
-    <button id="btnSimular">Simular corte</button>
-    <button id="btnReset">Restablecer</button>
+  <div id="leyenda">
+    <span class="item"><span class="punto verde"></span> Camino transitable</span>
+    <span class="item"><span class="punto rojo"></span> Camino cortado (simulado)</span>
+    <span class="item"><span class="punto gris"></span> Establecimiento aislado</span>
   </div>
 
+  <label for="selectorCamino">¿Qué camino está en riesgo de cortarse?</label>
+  <select id="selectorCamino"></select>
+  <button id="btnSimular">Ver efecto dominó</button>
+  <button id="btnReset">Restablecer</button>
+
   <div id="resumen"></div>
-  <svg id="diagrama" width="800" height="420" viewBox="0 0 800 420"></svg>
+  <svg id="diagrama" width="800" height="440" viewBox="0 0 800 440"></svg>
 
   <script>
     const API = 'http://localhost:3002';
     let grafo = null;
+    let posiciones = {};
 
-    // Posiciones fijas para este dataset de demo (5 nodos conocidos).
-    // Si el dataset cambia, hay que ajustar o generar esto dinámicamente.
-    const POSICIONES = {
-      'zona-segura': { x: 400, y: 60 },
-      'est-1':       { x: 220, y: 200 },
-      'est-2':       { x: 220, y: 340 },
-      'est-3':       { x: 580, y: 200 },
-      'est-4':       { x: 580, y: 340 },
-    };
+    function calcularPosiciones(g) {
+      const adyacencia = new Map();
+      g.nodos.forEach(function(n) { adyacencia.set(n.id, []); });
+      g.caminos.forEach(function(c) {
+        adyacencia.get(c.desde).push(c.hasta);
+        adyacencia.get(c.hasta).push(c.desde);
+      });
+
+      const nivel = new Map([['zona-segura', 0]]);
+      const cola = ['zona-segura'];
+      while (cola.length > 0) {
+        const actual = cola.shift();
+        const vecinos = adyacencia.get(actual) || [];
+        for (let i = 0; i < vecinos.length; i++) {
+          const vecino = vecinos[i];
+          if (!nivel.has(vecino)) {
+            nivel.set(vecino, nivel.get(actual) + 1);
+            cola.push(vecino);
+          }
+        }
+      }
+
+      const porNivel = {};
+      g.nodos.forEach(function(n) {
+        const l = nivel.has(n.id) ? nivel.get(n.id) : 0;
+        if (!porNivel[l]) porNivel[l] = [];
+        porNivel[l].push(n.id);
+      });
+
+      const pos = {};
+      Object.keys(porNivel).forEach(function(l) {
+        const ids = porNivel[l];
+        const y = 70 + Number(l) * 150;
+        const paso = 780 / (ids.length + 1);
+        ids.forEach(function(id, i) {
+          pos[id] = { x: paso * (i + 1) + 10, y: y };
+        });
+      });
+
+      return pos;
+    }
+
+    function ordenarPorCascada(g, idCaminoCortado, idsAislados) {
+      let camino = null;
+      for (let i = 0; i < g.caminos.length; i++) {
+        if (g.caminos[i].id === idCaminoCortado) { camino = g.caminos[i]; break; }
+      }
+      if (!camino) return idsAislados;
+
+      const adyacencia = new Map();
+      g.nodos.forEach(function(n) { adyacencia.set(n.id, []); });
+      g.caminos.forEach(function(c) {
+        if (c.id === idCaminoCortado) return;
+        adyacencia.get(c.desde).push(c.hasta);
+        adyacencia.get(c.hasta).push(c.desde);
+      });
+
+      const distancia = new Map([[camino.hasta, 0]]);
+      const cola = [camino.hasta];
+      while (cola.length > 0) {
+        const actual = cola.shift();
+        const vecinos = adyacencia.get(actual) || [];
+        for (let i = 0; i < vecinos.length; i++) {
+          const vecino = vecinos[i];
+          if (!distancia.has(vecino)) {
+            distancia.set(vecino, distancia.get(actual) + 1);
+            cola.push(vecino);
+          }
+        }
+      }
+
+      const copia = idsAislados.slice();
+      copia.sort(function(a, b) {
+        const da = distancia.has(a) ? distancia.get(a) : 99;
+        const db = distancia.has(b) ? distancia.get(b) : 99;
+        return da - db;
+      });
+      return copia;
+    }
 
     async function cargarGrafo() {
-      const res = await fetch(`${API}/api/grafo`);
+      const res = await fetch(API + '/api/grafo');
       grafo = await res.json();
+      posiciones = calcularPosiciones(grafo);
 
       const selector = document.getElementById('selectorCamino');
-      selector.innerHTML = grafo.caminos
-        .map(c => `<option value="${c.id}">${c.nombre ?? c.id} (${c.desde} → ${c.hasta})</option>`)
-        .join('');
+      let opciones = '';
+      grafo.caminos.forEach(function(c) {
+        opciones += '<option value="' + c.id + '">' + (c.nombre || c.id) + ' (' + c.desde + ' → ' + c.hasta + ')</option>';
+      });
+      selector.innerHTML = opciones;
 
       dibujar([], null);
     }
@@ -92,31 +127,34 @@
       const svg = document.getElementById('diagrama');
       let contenido = '';
 
-      // 1. Líneas (caminos) primero, para que queden debajo de los círculos
-      grafo.caminos.forEach(c => {
-        const desde = POSICIONES[c.desde];
-        const hasta = POSICIONES[c.hasta];
+      grafo.caminos.forEach(function(c) {
+        const desde = posiciones[c.desde];
+        const hasta = posiciones[c.hasta];
         if (!desde || !hasta) return;
-        const cortada = c.id === idCaminoCortado ? 'cortada' : '';
-        contenido += `<line class="linea ${cortada}" x1="${desde.x}" y1="${desde.y}" x2="${hasta.x}" y2="${hasta.y}" />`;
+        const cortada = (c.id === idCaminoCortado) ? 'cortada' : '';
+        contenido += '<line class="linea ' + cortada + '" x1="' + desde.x + '" y1="' + desde.y + '" x2="' + hasta.x + '" y2="' + hasta.y + '" />';
       });
 
-      // 2. Nodos (establecimientos)
-      grafo.nodos.forEach(n => {
-        const pos = POSICIONES[n.id];
+      grafo.nodos.forEach(function(n) {
+        const pos = posiciones[n.id];
         if (!pos) return;
         const esZonaSegura = n.id === 'zona-segura';
-        const apagado = idsAislados.includes(n.id);
+        const apagado = idsAislados.indexOf(n.id) !== -1;
         const claseNodo = ['nodo-circulo', esZonaSegura ? 'zona-segura' : '', apagado ? 'apagado' : ''].join(' ');
         const claseGrupo = ['nodo-grupo', apagado ? 'apagado' : ''].join(' ');
+        const nombreCorto = n.nombre.split(' ').slice(0, 2).join(' ');
 
-        contenido += `
-          <g class="${claseGrupo}">
-            <circle class="${claseNodo}" cx="${pos.x}" cy="${pos.y}" r="38" />
-            <text class="nodo-texto" x="${pos.x}" y="${pos.y - 4}">${n.nombre.split(' ').slice(0,2).join(' ')}</text>
-            ${!esZonaSegura ? `<text class="nodo-dato" x="${pos.x}" y="${pos.y + 12}">🐄 ${n.cabezasGanado}</text>` : ''}
-          </g>
-        `;
+        contenido += '<g class="' + claseGrupo + '">';
+        contenido += '<circle class="' + claseNodo + '" cx="' + pos.x + '" cy="' + pos.y + '" r="44" />';
+        contenido += '<text class="nodo-texto" x="' + pos.x + '" y="' + (pos.y - 20) + '">' + nombreCorto + '</text>';
+        if (!esZonaSegura) {
+          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y - 4) + '">🐄 ' + n.cabezasGanado + ' cab.</text>';
+          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y + 9) + '">🌾 ' + n.toneladasProduccion + ' tn' + (n.cultivo ? ' ' + n.cultivo : '') + '</text>';
+          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y + 22) + '">🚛 ' + n.camiones + ' camión(es)</text>';
+        } else {
+          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y + 6) + '">Zona segura</text>';
+        }
+        contenido += '</g>';
       });
 
       svg.innerHTML = contenido;
@@ -124,25 +162,36 @@
 
     async function simular() {
       const idCamino = document.getElementById('selectorCamino').value;
-      const res = await fetch(`${API}/api/simular-corte`, {
+      const res = await fetch(API + '/api/simular-corte', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idCamino })
+        body: JSON.stringify({ idCamino: idCamino })
       });
       const resultado = await res.json();
+      const idsAislados = resultado.establecimientosAislados.map(function(e) { return e.id; });
 
-      const idsAislados = resultado.establecimientosAislados.map(e => e.id);
-      dibujar(idsAislados, idCamino);
+      dibujar([], idCamino);
 
-      const resumen = document.getElementById('resumen');
-      resumen.style.display = 'block';
-      resumen.innerHTML = `
-        <b>${idCamino}</b> se corta →
-        ${resultado.establecimientosAislados.length} establecimiento(s) aislado(s) —
-        ${resultado.totalCabezasGanado} cabezas de ganado,
-        ${resultado.totalCamiones} camión(es) y
-        ${resultado.totalToneladas} toneladas sin salida.
-      `;
+      const orden = ordenarPorCascada(grafo, idCamino, idsAislados);
+      const acumulados = [];
+      orden.forEach(function(id, i) {
+        setTimeout(function() {
+          acumulados.push(id);
+          dibujar(acumulados, idCamino);
+        }, (i + 1) * 500);
+      });
+
+      setTimeout(function() {
+        const resumen = document.getElementById('resumen');
+        resumen.style.display = 'block';
+        resumen.innerHTML =
+          '<b>' + idCamino + '</b> se corta → efecto dominó completo:<br>' +
+          '🏚️ ' + resultado.establecimientosAislados.length + ' establecimiento(s) aislado(s)' +
+          ' &nbsp;·&nbsp; 🐄 ' + resultado.totalCabezasGanado + ' cabezas de ganado sin salida' +
+          ' &nbsp;·&nbsp; 🌾 ' + resultado.totalToneladas + ' toneladas bloqueadas' +
+          ' &nbsp;·&nbsp; 🚛 ' + resultado.totalCamiones + ' camión(es) varado(s)' +
+          '<br><br>⚠️ <b>Recomendación:</b> priorizar la apertura/reparación de este camino antes que otros con menor impacto productivo.';
+      }, (orden.length + 1) * 500);
     }
 
     function reset() {
