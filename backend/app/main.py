@@ -16,6 +16,7 @@ from .model_service import DISCLAIMER, ModelService
 from .schemas import DemoAnalysisRequest, DemoAnalysisResponse, FeatureInput, PredictionResponse
 
 STATIC_DIR = Path(__file__).with_name("static")
+ROOT_INDEX = Path(__file__).resolve().parents[2] / "index.html"
 
 
 @asynccontextmanager
@@ -77,7 +78,7 @@ async def analyze(payload: DemoAnalysisRequest, request: Request) -> dict[str, o
 
 @app.get("/", include_in_schema=False)
 async def index() -> FileResponse:
-    return FileResponse(STATIC_DIR / "index.html")
+    return FileResponse(ROOT_INDEX)
 
 
 @app.get("/ultima-ventana.html", include_in_schema=False)
