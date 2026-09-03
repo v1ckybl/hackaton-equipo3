@@ -8,7 +8,7 @@
       font-family: system-ui, sans-serif;
       background: #0f1115;
       color: #e6e6e6;
-      max-width: 800px;
+      max-width: 850px;
       margin: 40px auto;
       padding: 0 20px;
     }
@@ -24,32 +24,24 @@
     }
     button { cursor: pointer; background: #c0392b; border: none; }
     button:hover { background: #e74c3c; }
+    #btnReset { background: #555; }
 
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      margin-top: 24px;
-    }
-    .nodo {
-      background: #1a1d24;
-      border: 2px solid #2ecc71;
-      border-radius: 8px;
-      padding: 14px;
-      transition: all 0.3s ease;
-    }
-    .nodo.zona-segura { border-color: #3498db; }
-    .nodo.apagado {
-      border-color: #444;
-      background: #15161a;
-      opacity: 0.35;
-      filter: grayscale(1);
-    }
-    .nodo-nombre { font-weight: bold; margin-bottom: 6px; }
-    .nodo-dato { font-size: 0.85rem; color: #aaa; }
+    svg { margin-top: 24px; background: #15161a; border-radius: 8px; }
+
+    .linea { stroke: #2ecc71; stroke-width: 4; transition: all 0.3s ease; }
+    .linea.cortada { stroke: #c0392b; stroke-dasharray: 8 6; }
+
+    .nodo-circulo { fill: #1a1d24; stroke: #2ecc71; stroke-width: 3; transition: all 0.3s ease; }
+    .nodo-circulo.zona-segura { stroke: #3498db; }
+    .nodo-circulo.apagado { fill: #0f1115; stroke: #444; opacity: 0.35; }
+
+    .nodo-texto { fill: #e6e6e6; font-size: 12px; font-weight: bold; text-anchor: middle; }
+    .nodo-dato { fill: #aaa; font-size: 10px; text-anchor: middle; }
+    .nodo-grupo.apagado .nodo-texto,
+    .nodo-grupo.apagado .nodo-dato { opacity: 0.35; }
 
     #resumen {
-      margin-top: 20px;
+      margin-top: 16px;
       padding: 14px;
       background: #1a1d24;
       border-radius: 6px;
@@ -64,15 +56,25 @@
   <div>
     <select id="selectorCamino"></select>
     <button id="btnSimular">Simular corte</button>
-    <button id="btnReset" style="background:#555;">Restablecer</button>
+    <button id="btnReset">Restablecer</button>
   </div>
 
   <div id="resumen"></div>
-  <div class="grid" id="grid">Cargando...</div>
+  <svg id="diagrama" width="800" height="420" viewBox="0 0 800 420"></svg>
 
   <script>
     const API = 'http://localhost:3002';
     let grafo = null;
+
+    // Posiciones fijas para este dataset de demo (5 nodos conocidos).
+    // Si el dataset cambia, hay que ajustar o generar esto dinámicamente.
+    const POSICIONES = {
+      'zona-segura': { x: 400, y: 60 },
+      'est-1':       { x: 220, y: 200 },
+      'est-2':       { x: 220, y: 340 },
+      'est-3':       { x: 580, y: 200 },
+      'est-4':       { x: 580, y: 340 },
+    };
 
     async function cargarGrafo() {
       const res = await fetch(`${API}/api/grafo`);
@@ -83,26 +85,41 @@
         .map(c => `<option value="${c.id}">${c.nombre ?? c.id} (${c.desde} → ${c.hasta})</option>`)
         .join('');
 
-      dibujarNodos([]); // arranca sin nadie apagado
+      dibujar([], null);
     }
 
-    function dibujarNodos(idsAislados) {
-      const grid = document.getElementById('grid');
-      grid.innerHTML = grafo.nodos.map(n => {
+    function dibujar(idsAislados, idCaminoCortado) {
+      const svg = document.getElementById('diagrama');
+      let contenido = '';
+
+      // 1. Líneas (caminos) primero, para que queden debajo de los círculos
+      grafo.caminos.forEach(c => {
+        const desde = POSICIONES[c.desde];
+        const hasta = POSICIONES[c.hasta];
+        if (!desde || !hasta) return;
+        const cortada = c.id === idCaminoCortado ? 'cortada' : '';
+        contenido += `<line class="linea ${cortada}" x1="${desde.x}" y1="${desde.y}" x2="${hasta.x}" y2="${hasta.y}" />`;
+      });
+
+      // 2. Nodos (establecimientos)
+      grafo.nodos.forEach(n => {
+        const pos = POSICIONES[n.id];
+        if (!pos) return;
         const esZonaSegura = n.id === 'zona-segura';
         const apagado = idsAislados.includes(n.id);
-        const clases = ['nodo', esZonaSegura ? 'zona-segura' : '', apagado ? 'apagado' : ''].join(' ');
-        return `
-          <div class="${clases}">
-            <div class="nodo-nombre">${n.nombre}</div>
-            ${!esZonaSegura ? `
-              <div class="nodo-dato">🐄 ${n.cabezasGanado} cabezas</div>
-              <div class="nodo-dato">🌾 ${n.toneladasProduccion} tn producción</div>
-              <div class="nodo-dato">🚛 ${n.camiones} camión(es)</div>
-            ` : `<div class="nodo-dato">Zona segura</div>`}
-          </div>
+        const claseNodo = ['nodo-circulo', esZonaSegura ? 'zona-segura' : '', apagado ? 'apagado' : ''].join(' ');
+        const claseGrupo = ['nodo-grupo', apagado ? 'apagado' : ''].join(' ');
+
+        contenido += `
+          <g class="${claseGrupo}">
+            <circle class="${claseNodo}" cx="${pos.x}" cy="${pos.y}" r="38" />
+            <text class="nodo-texto" x="${pos.x}" y="${pos.y - 4}">${n.nombre.split(' ').slice(0,2).join(' ')}</text>
+            ${!esZonaSegura ? `<text class="nodo-dato" x="${pos.x}" y="${pos.y + 12}">🐄 ${n.cabezasGanado}</text>` : ''}
+          </g>
         `;
-      }).join('');
+      });
+
+      svg.innerHTML = contenido;
     }
 
     async function simular() {
@@ -115,7 +132,7 @@
       const resultado = await res.json();
 
       const idsAislados = resultado.establecimientosAislados.map(e => e.id);
-      dibujarNodos(idsAislados);
+      dibujar(idsAislados, idCamino);
 
       const resumen = document.getElementById('resumen');
       resumen.style.display = 'block';
@@ -129,7 +146,7 @@
     }
 
     function reset() {
-      dibujarNodos([]);
+      dibujar([], null);
       document.getElementById('resumen').style.display = 'none';
     }
 

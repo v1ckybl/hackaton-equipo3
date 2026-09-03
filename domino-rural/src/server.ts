@@ -36,6 +36,12 @@ app.post('/api/simular-corte', (req, res) => {
   res.json(resultado);
 });
 
+// GET /api/grafo
+// Devuelve todos los nodos y caminos, para que el frontend pueda dibujarlos.
+app.get('/api/grafo', (req, res) => {
+  res.json(grafoEjemplo);
+});
+
 app.listen(PUERTO, () => {
   console.log(`Módulo Dominio Rural corriendo en http://localhost:${PUERTO}`);
 });
