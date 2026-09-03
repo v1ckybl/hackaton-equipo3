@@ -1,6 +1,9 @@
 import cv2
+import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 import numpy as np
 
 app = FastAPI()
@@ -13,7 +16,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 def detectar_zona_urbana(imagen_gray):
     # Desenfoque más fuerte para eliminar ruido superficial de texturas de vegetación
     gray_blur = cv2.GaussianBlur(imagen_gray, (11, 11), 0)
@@ -24,7 +26,6 @@ def detectar_zona_urbana(imagen_gray):
     # Umbral elevado para evitar que los bosques o mapas densos pasen por urbanos
     es_urbano = bool(densidad_bordes > 0.22)
     return es_urbano, densidad_bordes
-
 
 def estimar_cultivo_por_color(imagen_hsv, es_urbano: bool):
     if es_urbano:
@@ -67,23 +68,18 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
         es_urbano, densidad = detectar_zona_urbana(gray)
 
         # 2. Rangos HSV de agua corregidos para evitar falsos positivos en sombras/suelos
-        
-        # MÁSCARA 1: Solo cuerpos de agua muy oscuros y profundos (reducimos brillo máximo a 45)
         lower_w1 = np.array([0, 0, 0])
         upper_w1 = np.array([180, 255, 45])
         mask1 = cv2.inRange(hsv, lower_w1, upper_w1)
 
-        # MÁSCARA 2: Agua azul / turquesa / verdosa brillante
         lower_w2 = np.array([70, 20, 50])
         upper_w2 = np.array([140, 255, 230])
         mask2 = cv2.inRange(hsv, lower_w2, upper_w2)
 
-        # MÁSCARA 3: Agua turbia / con sedimentos
         lower_w3 = np.array([12, 15, 50])
         upper_w3 = np.array([45, 100, 160])
         mask3 = cv2.inRange(hsv, lower_w3, upper_w3)
 
-        # Unión estricta de máscaras de agua (eliminamos la máscara 4 genérica grisácea que atrapaba sombras)
         water_mask = cv2.bitwise_or(mask1, mask2)
         water_mask = cv2.bitwise_or(water_mask, mask3)
 
@@ -92,13 +88,13 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
         water_mask = cv2.morphologyEx(water_mask, cv2.MORPH_OPEN, kernel)
         water_mask = cv2.morphologyEx(water_mask, cv2.MORPH_CLOSE, kernel)
 
-        # 4. Filtrado por área de contorno (exigiendo un área mínima mayor)
+        # 4. Filtrado por área de contorno
         contours, _ = cv2.findContours(
             water_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
         mask_filtrada = np.zeros_like(water_mask)
 
-        min_area = total_pixels * 0.0015  # Incrementado para ignorar charcos pequeños o ruido de sombras
+        min_area = total_pixels * 0.0015 
 
         for cnt in contours:
             if cv2.contourArea(cnt) > min_area:
@@ -119,7 +115,6 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
             round((porcentaje_dano / 100.0) * superficie_total, 1)
         )
 
-        # Umbrales de severidad más equilibrados
         if porcentaje_dano > 25.0:
             nivel_severidad = "ALTA"
         elif porcentaje_dano >= 8.0:
@@ -131,9 +126,7 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
 
         return {
             "status": "success",
-            "metodo": (
-                "Visión por Computadora (OpenCV - Análisis Espectral y Textura Ajustado)"
-            ),
+            "metodo": "Visión por Computadora (OpenCV - Análisis Espectral y Textura Ajustado)",
             "datos": {
                 "superficie_total_ha": superficie_total,
                 "area_afectada_ha": area_afectada,
@@ -145,3 +138,25 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# =======================================================
+# NUEVO: RUTAS PARA SERVIR TUS PÁGINAS WEB (FRONTEND)
+# =======================================================
+
+# 1. Si existe una carpeta "img" con tus fotos, le decimos a Python que la muestre
+if os.path.isdir("img"):
+    app.mount("/img", StaticFiles(directory="img"), name="img")
+
+# 2. Cuando el usuario entra a tu link principal de Render, cargamos el index.html
+@app.get("/")
+async def cargar_inicio():
+    return FileResponse("index.html")
+
+# 3. Ruta dinámica para cargar cualquier otra página (.html) que esté en tu carpeta
+@app.get("/{pagina}.html")
+async def cargar_paginas(pagina: str):
+    archivo = f"{pagina}.html"
+    if os.path.exists(archivo):
+        return FileResponse(archivo)
+    raise HTTPException(status_code=404, detail="Página no encontrada")

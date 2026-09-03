@@ -208,7 +208,7 @@
 
             try {
                 // Conexión con el backend FastAPI
-                const response = await fetch('http://127.0.0.1:8000/api/analizar-imagen-real', {
+                const response = await fetch('/api/analizar-imagen-real', {
                     method: 'POST',
                     body: formData
                 });
