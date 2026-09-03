@@ -1,0 +1,36 @@
+# Entornos virtuales de Python
+.venv/
+venv/
+env/
+
+# Archivos generados por Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Herramientas de pruebas y tipado
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Archivos de compilación y paquetes
+build/
+dist/
+*.egg-info/
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Datos locales generados por la aplicación
+datos/
+
+# Configuración de editores y sistema operativo
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Restos de Node/TypeScript
+node_modules/
