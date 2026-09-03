@@ -1,3 +1,4 @@
+#Actualización forzada - S.I.G.E.A V2 - 2026
 import cv2
 import os
 from fastapi import FastAPI, File, HTTPException, UploadFile
