@@ -3,3 +3,9 @@ uvicorn
 opencv-python-headless
 numpy
 python-multipart
+# El archivo sensor_humano.py usa únicamente la biblioteca estándar de Python.
+# Por eso no necesita instalar paquetes externos.
+#
+# Si más adelante se reemplaza el servidor incorporado por Flask, instalar:
+# Flask
+# Flask-Cors
