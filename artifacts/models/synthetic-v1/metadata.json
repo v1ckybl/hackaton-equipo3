@@ -18,7 +18,7 @@
     "slope_mean_pct",
     "water_coverage_100m_ratio"
   ],
-  "feature_schema_sha256": "6fcac308c6ff82545278c7a5c8e727c6634e850e2fab4c5e4b1eeb8a3717c236",
+  "feature_schema_sha256": "8bc647ba66678360d144f9a5f55b334aaa046af9bd34c6f72328d4d757c11e33",
   "feature_schema_version": "v1",
   "label_origin": "SYNTHETIC",
   "label_rule_version": "synthetic-v1",
