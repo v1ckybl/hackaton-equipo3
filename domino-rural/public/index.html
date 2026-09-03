@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Dominio Rural — Caminos Críticos</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #0f1115;
+      color: #e6e6e6;
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 { font-size: 1.4rem; }
+    .camino {
+      border-left: 4px solid #c0392b;
+      background: #1a1d24;
+      padding: 16px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+    }
+    .camino.medio { border-left-color: #e67e22; }
+    .camino.bajo { border-left-color: #f1c40f; }
+    .titulo { font-weight: bold; font-size: 1.1rem; margin-bottom: 8px; }
+    .cadena { margin: 8px 0; line-height: 1.6; }
+    .totales { margin-top: 10px; font-size: 0.95rem; color: #aaa; }
+    .totales b { color: #e6e6e6; }
+  </style>
+</head>
+<body>
+  <h1>🚧 Caminos críticos — Dominio Rural</h1>
+  <div id="contenedor">Cargando...</div>
+
+  <script>
+    async function cargar() {
+      const contenedor = document.getElementById('contenedor');
+      try {
+        const res = await fetch('http://localhost:3002/api/caminos-criticos');
+        const datos = await res.json();
+        contenedor.innerHTML = '';
+
+        datos.forEach((item, i) => {
+          const nivel = i === 0 ? '' : i === 1 ? 'medio' : 'bajo';
+          const nombres = item.establecimientosAislados.map(e => e.nombre).join(', ');
+
+          const div = document.createElement('div');
+          div.className = 'camino ' + nivel;
+          div.innerHTML = `
+            <div class="titulo">${item.caminoCortado} se corta</div>
+            <div class="cadena">
+              ↓ ${item.establecimientosAislados.length} establecimiento(s) aislado(s): ${nombres}<br>
+              ↓ ${item.totalCabezasGanado} cabezas de ganado sin salida<br>
+              ↓ ${item.totalCamiones} camión(es) no pueden retirar producción<br>
+              ↓ ${item.totalToneladas} toneladas de producción bloqueadas
+            </div>
+            <div class="totales">Impacto ordenado: <b>#${i + 1}</b> más crítico</div>
+          `;
+          contenedor.appendChild(div);
+        });
+      } catch (err) {
+        contenedor.innerText = 'Error al conectar con la API. ¿Está corriendo npm run dev?';
+      }
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
