@@ -1,1215 +1,294 @@
 <!DOCTYPE html>
-
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<meta name="theme-color" content="#065f46">
-
-<title>FloodPrint AI - S.I.G.E.A</title>
-
-
-<!-- Google Fonts: Inter -->
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-
-<!-- Librería html2pdf para generar el PDF automáticamente -->
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-
-
-<style>
-
-:root {
-
---verde-primario: #059669; /* Emerald 600 */
-
---verde-oscuro: #065f46; /* Emerald 800 */
-
---verde-claro: #d1fae5; /* Emerald 100 */
-
---fondo-gris: #f3f4f6;
-
---texto-principal: #1f2937;
-
---texto-secundario: #4b5563;
-
---blanco: #ffffff;
-
---borde: #e5e7eb;
-
---rojo-alerta: #dc2626;
-
---naranja-advertencia: #d97706;
-
---sombra: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-
-}
-
-
-
-* {
-
-box-sizing: border-box;
-
-margin: 0;
-
-padding: 0;
-
-}
-
-
-
-body {
-
-background-color: var(--fondo-gris);
-
-color: var(--texto-principal);
-
-font-family: 'Inter', sans-serif;
-
-line-height: 1.6;
-
--webkit-font-smoothing: antialiased;
-
-}
-
-
-
-/* Cabecera / Hero */
-
-header {
-
-background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
-
-color: var(--blanco);
-
-padding: 2.5rem 1.5rem;
-
-text-align: center;
-
-border-bottom: 5px solid #10b981;
-
-display: flex;
-
-justify-content: space-between;
-
-align-items: center;
-
-flex-wrap: wrap;
-
-gap: 1rem;
-
-}
-
-
-
-.header-titulo {
-
-display: flex;
-
-align-items: center;
-
-gap: 12px;
-
-margin: 0 auto;
-
-}
-
-
-
-header h1 {
-
-font-size: 2rem;
-
-font-weight: 700;
-
-letter-spacing: -0.5px;
-
-}
-
-
-
-header span {
-
-background: rgba(255, 255, 255, 0.2);
-
-padding: 0.4rem 0.9rem;
-
-border-radius: 20px;
-
-font-size: 0.85rem;
-
-font-weight: 500;
-
-}
-
-
-
-.btn-volver {
-
-background: rgba(255, 255, 255, 0.15);
-
-color: white;
-
-text-decoration: none;
-
-padding: 0.5rem 1rem;
-
-border-radius: 8px;
-
-font-size: 0.9rem;
-
-font-weight: 600;
-
-transition: background 0.3s;
-
-}
-
-
-
-.btn-volver:hover {
-
-background: rgba(255, 255, 255, 0.3);
-
-}
-
-
-
-/* Contenedor Principal */
-
-.container {
-
-max-width: 1100px;
-
-margin: 2.5rem auto 1.5rem auto;
-
-padding: 0 1.5rem;
-
-display: grid;
-
-grid-template-columns: 1fr 1fr;
-
-gap: 2rem;
-
-}
-
-
-
-/* Tarjetas (Cards) */
-
-.card {
-
-background-color: var(--blanco);
-
-border-radius: 16px;
-
-padding: 2rem;
-
-box-shadow: var(--sombra);
-
-border: 1px solid var(--borde);
-
-display: flex;
-
-flex-direction: column;
-
-}
-
-
-
-.card h2 {
-
-font-size: 1.25rem;
-
-font-weight: 700;
-
-color: var(--texto-principal);
-
-margin-bottom: 1.25rem;
-
-border-bottom: 2px solid var(--fondo-gris);
-
-padding-bottom: 0.75rem;
-
-}
-
-
-
-/* Zona de Carga de Imagen */
-
-.map-placeholder {
-
-width: 100%;
-
-height: 180px;
-
-background-color: #f9fafb;
-
-border-radius: 10px;
-
-display: flex;
-
-flex-direction: column;
-
-align-items: center;
-
-justify-content: center;
-
-color: var(--texto-secundario);
-
-font-weight: 500;
-
-margin-bottom: 1.25rem;
-
-border: 2px dashed #cbd5e1;
-
-text-align: center;
-
-padding: 1rem;
-
-gap: 8px;
-
-}
-
-
-
-.map-placeholder svg {
-
-width: 36px;
-
-height: 36px;
-
-stroke: var(--verde-primario);
-
-}
-
-
-
-label {
-
-display: block;
-
-font-weight: 600;
-
-font-size: 0.9rem;
-
-margin-bottom: 0.5rem;
-
-color: var(--texto-secundario);
-
-}
-
-
-
-input[type="file"] {
-
-width: 100%;
-
-padding: 10px;
-
-background: #f9fafb;
-
-border-radius: 8px;
-
-border: 1px solid var(--borde);
-
-font-size: 0.9rem;
-
-cursor: pointer;
-
-margin-bottom: 1rem;
-
-}
-
-
-
-/* Botones generales */
-
-button {
-
-width: 100%;
-
-padding: 0.9rem;
-
-border-radius: 8px;
-
-border: none;
-
-font-size: 1rem;
-
-font-weight: 600;
-
-cursor: pointer;
-
-transition: all 0.3s ease;
-
-}
-
-
-
-.btn-analizar {
-
-background-color: var(--verde-primario);
-
-color: white;
-
-margin-top: 0.5rem;
-
-}
-
-
-
-.btn-analizar:hover {
-
-background-color: var(--verde-oscuro);
-
-}
-
-
-
-#loader {
-
-display: none;
-
-text-align: center;
-
-margin: 1.5rem 0;
-
-color: var(--verde-primario);
-
-font-weight: 600;
-
-}
-
-
-
-#resultado {
-
-display: none;
-
-background: #ffffff;
-
-border-left: 6px solid var(--verde-primario);
-
-}
-
-
-
-/* Estado inicial del panel derecho cuando no hay datos */
-
-.card-vacia {
-
-display: flex;
-
-flex-direction: column;
-
-align-items: center;
-
-justify-content: center;
-
-text-align: center;
-
-color: var(--texto-secundario);
-
-background: #fafafa;
-
-border: 2px dashed var(--borde);
-
-}
-
-
-
-.card-vacia p {
-
-font-size: 0.95rem;
-
-max-width: 280px;
-
-margin-top: 0.5rem;
-
-}
-
-
-
-/* Lista de Métricas */
-
-.metric-list {
-
-list-style: none;
-
-padding: 0;
-
-margin-bottom: 1.5rem;
-
-}
-
-
-
-.metric-list li {
-
-display: flex;
-
-justify-content: space-between;
-
-align-items: center;
-
-padding: 12px 0;
-
-border-bottom: 1px solid var(--borde);
-
-font-size: 0.95rem;
-
-}
-
-
-
-.metric-list li span:first-child {
-
-font-weight: 600;
-
-color: var(--texto-secundario);
-
-}
-
-
-
-/* Insignias de Severidad */
-
-.severidad-alta {
-
-color: var(--rojo-alerta);
-
-font-weight: 700;
-
-background: #fee2e2;
-
-padding: 4px 10px;
-
-border-radius: 20px;
-
-font-size: 0.85rem;
-
-}
-
-
-
-.severidad-media {
-
-color: var(--naranja-advertencia);
-
-font-weight: 700;
-
-background: #fef3c7;
-
-padding: 4px 10px;
-
-border-radius: 20px;
-
-font-size: 0.85rem;
-
-}
-
-
-
-.severidad-baja {
-
-color: var(--verde-oscuro);
-
-font-weight: 700;
-
-background: var(--verde-claro);
-
-padding: 4px 10px;
-
-border-radius: 20px;
-
-font-size: 0.85rem;
-
-}
-
-
-
-.btn-success {
-
-background-color: #2563eb;
-
-color: white;
-
-}
-
-
-
-.btn-success:hover {
-
-background-color: #1d4ed8;
-
-}
-
-
-
-/* Seccion de Banco de Pruebas Rápidas */
-
-.seccion-pruebas {
-
-max-width: 1100px;
-
-margin: 0 auto 3rem auto;
-
-padding: 0 1.5rem;
-
-}
-
-
-
-.card-pruebas {
-
-background: var(--blanco);
-
-border-radius: 16px;
-
-padding: 2rem;
-
-box-shadow: var(--sombra);
-
-border: 1px solid var(--borde);
-
-}
-
-
-
-.card-pruebas h3 {
-
-font-size: 1.2rem;
-
-color: var(--texto-principal);
-
-margin-bottom: 0.5rem;
-
-}
-
-
-
-.card-pruebas p {
-
-font-size: 0.9rem;
-
-color: var(--texto-secundario);
-
-margin-bottom: 1.5rem;
-
-}
-
-
-
-.grid-muestras {
-
-display: grid;
-
-grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-
-gap: 1rem;
-
-}
-
-
-
-.muestra-item {
-
-background: #f9fafb;
-
-border: 1px solid var(--borde);
-
-border-radius: 10px;
-
-overflow: hidden;
-
-transition: transform 0.2s, box-shadow 0.2s;
-
-cursor: pointer;
-
-display: flex;
-
-flex-direction: column;
-
-}
-
-
-
-.muestra-item:hover {
-
-transform: translateY(-4px);
-
-box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-
-border-color: var(--verde-primario);
-
-}
-
-
-
-.muestra-item img {
-
-width: 100%;
-
-height: 120px;
-
-object-fit: cover;
-
-}
-
-
-
-.muestra-info {
-
-padding: 0.8rem;
-
-display: flex;
-
-flex-direction: column;
-
-justify-content: space-between;
-
-flex-grow: 1;
-
-}
-
-
-
-.muestra-info h4 {
-
-font-size: 0.9rem;
-
-margin-bottom: 0.3rem;
-
-color: var(--texto-principal);
-
-}
-
-
-
-.muestra-info span {
-
-font-size: 0.75rem;
-
-color: var(--texto-secundario);
-
-}
-
-
-
-.btn-test {
-
-margin-top: 0.6rem;
-
-background: var(--verde-claro);
-
-color: var(--verde-oscuro);
-
-padding: 0.4rem;
-
-font-size: 0.8rem;
-
-border-radius: 6px;
-
-font-weight: 600;
-
-}
-
-
-
-.btn-test:hover {
-
-background: var(--verde-primario);
-
-color: white;
-
-}
-
-
-
-.no-print { display: block; }
-
-
-
-@media (max-width: 768px) {
-
-.container { grid-template-columns: 1fr; }
-
-header { flex-direction: column; text-align: center; }
-
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#065f46">
+    <title>S.I.G.E.A - Sistema Integral de Gestión de Emergencias Agropecuarias</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --verde-primario: #059669;
+            --verde-oscuro: #065f46;
+            --verde-claro: #d1fae5;
+            --fondo-gris: #f3f4f6;
+            --texto-principal: #1f2937;
+            --texto-secundario: #4b5563;
+            --blanco: #ffffff;
+            --borde: #e5e7eb;
+            --sombra: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--fondo-gris);
+            color: var(--texto-principal);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
+            color: var(--blanco);
+            padding: 3.5rem 1.5rem 4.5rem 1.5rem;
+            text-align: center;
+            border-bottom: 5px solid #10b981;
+        }
+
+        header h1 {
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.5px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            font-weight: 300;
+            opacity: 0.95;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .contenedor {
+            max-width: 1150px;
+            margin: -2.5rem auto 3rem auto;
+            padding: 0 1.5rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .grid-servicios {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .tarjeta {
+            background: var(--blanco);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: var(--sombra);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--borde);
+        }
+
+        .tarjeta:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: var(--verde-primario);
+        }
+
+        .img-contenedor {
+            width: 100%;
+            height: 170px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .img-contenedor img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .tarjeta:hover .img-contenedor img {
+            transform: scale(1.06);
+        }
+
+        .etiqueta-flotante {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .ia { color: #2563eb; }
+        .logistica { color: #d97706; }
+        .social { color: #dc2626; }
+        .simulacion { color: #7c3aed; }
+
+        .tarjeta-cuerpo {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .tarjeta h2 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--texto-principal);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tarjeta p.descripcion {
+            color: var(--texto-secundario);
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
+            line-height: 1.45;
+        }
+
+        .caracteristicas {
+            list-style: none;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .caracteristicas li {
+            font-size: 0.82rem;
+            color: var(--texto-secundario);
+            margin-bottom: 0.4rem;
+            position: relative;
+            padding-left: 1.4rem;
+        }
+
+        .caracteristicas li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--verde-primario);
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            text-align: center;
+            background-color: var(--verde-primario);
+            color: var(--blanco);
+            text-decoration: none;
+            padding: 0.8rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: background 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--verde-oscuro);
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 2.5rem 1rem; }
+            header h1 { font-size: 2.1rem; }
+            .contenedor { margin-top: -1rem; }
+            .tarjeta-cuerpo { padding: 1.25rem; }
+        }
+    </style>
 </head>
-
 <body>
 
-
-
-<header>
-
-<a href="index.html" class="btn-volver">← Volver al Panel</a>
-
-<div class="header-titulo">
-
-<h1>🌳 FloodPrint AI</h1>
-
-<span>Certificación Satelital</span>
-
-</div>
-
-<div style="width: 100px;"></div>
-
-</header>
-
-
-
-<div class="container">
-
-<!-- Columna de Carga -->
-
-<div class="card">
-
-<h2>1. Carga de Imagen Satelital</h2>
-
-<div class="map-placeholder" id="placeholder-box">
-
-<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-
-<path stroke-linecap="round" stroke-linejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.75 3.75 0 0 1 18 19.5H6.75Z" />
-
-</svg>
-
-<span id="map-text">Sube una captura o imagen aérea del predio rural</span>
-
-</div>
-
-
-<label for="imageInput">Seleccionar archivo local:</label>
-
-<input type="file" id="imageInput" accept="image/*" onchange="mostrarNombreArchivo(this)">
-
-
-
-<button id="btn-analizar" class="btn-analizar" onclick="analizarImagenReal()">Procesar con IA de Visión</button>
-
-<div id="loader">Analizando matriz de píxeles y espectro hídrico...</div>
-
-</div>
-
-
-
-<!-- Columna de Resultados Dinámicos -->
-
-<div>
-
-<!-- Estado Vacío Inicial -->
-
-<div class="card card-vacia" id="card-vacia">
-
-<svg width="48" height="48" fill="none" stroke="#9ca3af" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>
-
-<h3 style="margin-top: 10px; color: var(--texto-principal);">Sin reporte generado</h3>
-
-<p>Sube una imagen o selecciona una muestra de prueba abajo para emitir el certificado automático.</p>
-
-</div>
-
-
-
-<!-- Reporte Activo (Oculto hasta procesar) -->
-
-<div class="card" id="resultado">
-
-<div id="pdf-header" style="display:none; text-align: center; margin-bottom: 20px;">
-
-<h1 style="color: var(--verde-oscuro); margin: 0; font-size: 1.4rem;">Certificado de Emergencia Agropecuaria</h1>
-
-<p style="color: var(--texto-secundario); font-size: 0.85rem; margin-top: 4px;">Emitido por FloodPrint AI — S.I.G.E.A</p>
-
-<hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
-
-</div>
-
-
-
-<h2>2. Reporte Automático de Daños</h2>
-
-<ul class="metric-list">
-
-<li><span>Superficie total del predio:</span> <span id="val-sup">0 ha</span></li>
-
-<li><span>Área afectada por anegamiento:</span> <span id="val-afectada" style="color: var(--rojo-alerta);">0 ha</span></li>
-
-<li><span>Cultivo estimado afectado:</span> <span id="val-cultivo">-</span></li>
-
-<li><span>Severidad del evento:</span> <span id="val-severidad" class="severidad-baja">BAJA</span></li>
-
-<li><span>Daño productivo estimado:</span> <span id="val-dano" style="font-weight: 700; color: var(--rojo-alerta);">0%</span></li>
-
-</ul>
-
-
-
-<button class="btn-success no-print" id="btn-pdf" onclick="generarPDF()">
-
-📄 Generar Declaración de Emergencia (PDF)
-
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<!-- SECCIÓN NUEVA: BANCO DE PRUEBAS RÁPIDAS PARA EL JURADO -->
-
-<div class="seccion-pruebas">
-
-<div class="card-pruebas">
-
-<h3>🚀 Banco de Pruebas Rápidas (Demo Hackathon)</h3>
-
-<p>Haz clic en cualquiera de estas imágenes satelitales preconfiguradas para probar el motor de visión por computadora al instante:</p>
-
-
-<div class="grid-muestras">
-
-<!-- Muestra 1 -->
-
-<div class="muestra-item" onclick="probarPreset('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop', 'Zona Inundada / Cultivos')">
-
-<img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Inundación">
-
-<div class="muestra-info">
-
-<div>
-
-<h4>Lote Rural Anegado</h4>
-
-<span>Simula exceso hídrico en producción</span>
-
-</div>
-
-<button class="btn-test">Probar IA</button>
-
-</div>
-
-</div>
-
-
-
-<!-- Muestra 2 -->
-
-<div class="muestra-item" onclick="probarPreset('https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop', 'Campo Normal / Pastura')">
-
-<img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=800&auto=format&fit=crop" alt="Campo Normal">
-
-<div class="muestra-info">
-
-<div>
-
-<h4>Establecimiento Sano</h4>
-
-<span>Pasturas y campo natural óptimo</span>
-
-</div>
-
-<button class="btn-test">Probar IA</button>
-
-</div>
-
-</div>
-
-
-
-<!-- Muestra 3 -->
-
-<div class="muestra-item" onclick="probarPreset('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop', 'Foresto-industria')">
-
-<img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=800&auto=format&fit=crop" alt="Bosque">
-
-<div class="muestra-info">
-
-<div>
-
-<h4>Foresto-Industria</h4>
-
-<span>Masa arbórea densa (Pino/Eucalipto)</span>
-
-</div>
-
-<button class="btn-test">Probar IA</button>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<script>
-
-function mostrarNombreArchivo(input) {
-
-if (input.files && input.files[0]) {
-
-document.getElementById('map-text').innerText = "Archivo seleccionado: " + input.files[0].name;
-
-}
-
-}
-
-
-
-async function analizarImagenReal() {
-
-const fileInput = document.getElementById('imageInput');
-
-if(fileInput.files.length === 0) {
-
-alert("Por favor, selecciona una imagen satelital o utiliza una muestra del banco de pruebas.");
-
-return;
-
-}
-
-
-
-const formData = new FormData();
-
-formData.append("file", fileInput.files[0]);
-
-
-
-ejecutarAnalisisAPI(formData, fileInput.files[0].name);
-
-}
-
-
-
-// Función para procesar imágenes del Banco de Pruebas directamente por URL
-
-async function probarPreset(urlImagen, nombrePreset) {
-
-const mapText = document.getElementById('map-text');
-
-mapText.innerText = `Cargando muestra: ${nombrePreset}...`;
-
-
-
-try {
-
-// Descargamos la imagen de prueba mediante fetch para convertirla en archivo simulado
-
-const respuesta = await fetch(urlImagen);
-
-const blob = await respuesta.blob();
-
-const archivo = new File([blob], `${nombrePreset.replace(/\s+/g, '_')}.jpg`, { type: "image/jpeg" });
-
-
-
-const formData = new FormData();
-
-formData.append("file", archivo);
-
-
-
-mapText.innerText = `Muestra lista: ${nombrePreset}`;
-
-ejecutarAnalisisAPI(formData, nombrePreset);
-
-} catch (error) {
-
-alert("No se pudo cargar la imagen de prueba debido a restricciones de red/CORS del navegador. Sube una foto desde tu equipo.");
-
-mapText.innerText = "Error cargando muestra preset.";
-
-}
-
-}
-
-
-
-// Núcleo común de envío a la API de FastAPI
-
-async function ejecutarAnalisisAPI(formData, nombreOrigen) {
-
-const btn = document.getElementById('btn-analizar');
-
-const loader = document.getElementById('loader');
-
-const resultado = document.getElementById('resultado');
-
-const cardVacia = document.getElementById('card-vacia');
-
-const mapText = document.getElementById('map-text');
-
-
-
-btn.style.display = 'none';
-
-resultado.style.display = 'none';
-
-cardVacia.style.display = 'none';
-
-loader.style.display = 'block';
-
-mapText.innerText = `Procesando matriz de píxeles (${nombreOrigen})...`;
-
-
-
-try {
-
-const response = await fetch('/api/analizar-imagen-real', {
-
-method: 'POST',
-
-body: formData
-
-});
-
-
-const data = await response.json();
-
-
-if (!response.ok) {
-
-throw new Error(data.detail || "Error en el servidor");
-
-}
-
-
-
-if(data.status === "success") {
-
-loader.style.display = 'none';
-
-resultado.style.display = 'block';
-
-btn.style.display = 'block';
-
-btn.innerText = "Analizar Otra Imagen";
-
-
-// Rellenar métricas reales que devuelve tu API de Python
-
-document.getElementById('val-sup').innerText = data.datos.superficie_total_ha + " ha";
-
-document.getElementById('val-afectada').innerText = data.datos.area_afectada_ha + " ha";
-
-document.getElementById('val-cultivo').innerText = data.datos.cultivo;
-
-document.getElementById('val-dano').innerText = data.datos.dano_estimado_porcentaje + "%";
-
-
-const elSeveridad = document.getElementById('val-severidad');
-
-const severidad = data.datos.severidad || "BAJA";
-
-
-elSeveridad.innerText = severidad;
-
-if (severidad === "ALTA") {
-
-elSeveridad.className = "severidad-alta";
-
-} else if (severidad === "MEDIA") {
-
-elSeveridad.className = "severidad-media";
-
-} else {
-
-elSeveridad.className = "severidad-baja";
-
-}
-
-
-
-mapText.innerText = "¡Análisis satelital completado con éxito!";
-
-}
-
-} catch (error) {
-
-alert("Error del servidor: " + error.message);
-
-loader.style.display = 'none';
-
-btn.style.display = 'block';
-
-cardVacia.style.display = 'flex';
-
-mapText.innerText = "Error en el análisis.";
-
-}
-
-}
-
-
-
-// Función para generar el PDF oficial de emergencia
-
-function generarPDF() {
-
-document.getElementById('pdf-header').style.display = 'block';
-
-document.getElementById('btn-pdf').style.display = 'none';
-
-
-
-const elemento = document.getElementById('resultado');
-
-
-const opciones = {
-
-margin: 15,
-
-filename: 'FloodPrint_Declaracion_Emergencia.pdf',
-
-image: { type: 'jpeg', quality: 0.98 },
-
-html2canvas: { scale: 2 },
-
-jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-
-};
-
-
-
-html2pdf().set(opciones).from(elemento).save().then(() => {
-
-document.getElementById('pdf-header').style.display = 'none';
-
-document.getElementById('btn-pdf').style.display = 'block';
-
-});
-
-}
-
-</script>
+    <header>
+        <h1>S.I.G.E.A</h1>
+        <p>Sistema Integral de Gestión de Emergencias Agropecuarias. Plataforma multi-módulo de alta precisión que combina inteligencia artificial satelital, analítica predictiva de caminos y redes ciudadanas de terreno para mitigar el impacto de crisis climáticas en la producción.</p>
+    </header>
+
+    <main class="contenedor">
+        <div class="grid-servicios">
+
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante logistica">Logística Predictiva</span>
+                    <img src="https://images.unsplash.com/photo-1605649479383-7c8c3c1dbdb4?q=80&w=800&auto=format&fit=crop" alt="Camino rural">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>🚜 Última Ventana</h2>
+                    <p class="descripcion">
+                        Algoritmo inteligente que cruza pronósticos meteorológicos y capacidad de infiltración edafológica para anticipar el corte de caminos rurales.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Cálculo exacto de la hora límite segura de salida.</li>
+                        <li>Protección anticipada de maquinaria y ganado.</li>
+                        <li>Transforma datos climáticos en logística operativa.</li>
+                    </ul>
+                    <a href="ultima-ventana.html" class="btn">Abrir Simulador de Rutas</a>
+                </div>
+            </div>
+
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante ia">Visión Artificial</span>
+                    <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=800&auto=format&fit=crop" alt="Zona anegada">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>🌳 FloodPrint AI</h2>
+                    <p class="descripcion">
+                        Procesamiento automatizado de imágenes satelitales mediante OpenCV para auditar daños productivos y emitir certificados al instante.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Diferenciación espectral de cuerpos de agua.</li>
+                        <li>Cálculo automatizado de hectáreas perdidas.</li>
+                        <li>Generación de PDF oficial para Emergencia.</li>
+                    </ul>
+                    <a href="floodprint.html" class="btn">Ingresar a FloodPrint</a>
+                </div>
+            </div>
+
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante simulacion">Análisis Sistémico</span>
+                    <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="Redes conectadas">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>🔗 Impacto en Cascada</h2>
+                    <p class="descripcion">
+                        Simulador macroeconómico que mapea las cadenas de valor y los establecimientos productivos que quedan completamente aislados.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Mapeo dinámico de familias y zonas incomunicadas.</li>
+                        <li>Cuantificación de toneladas de cosecha bloqueada.</li>
+                        <li>Optimización de recursos para Defensa Civil.</li>
+                    </ul>
+                    <a href="impacto-sistemico.html" class="btn">Ver Mapa de Impacto</a>
+                </div>
+            </div>
+
+            <div class="tarjeta">
+                <div class="img-contenedor">
+                    <span class="etiqueta-flotante social">Red Ciudadana (PWA)</span>
+                    <img src="https://images.unsplash.com/photo-1595995536417-7a5611488c03?q=80&w=800&auto=format&fit=crop" alt="Productor en campo">
+                </div>
+                <div class="tarjeta-cuerpo">
+                    <h2>📱 Sensor Humano</h2>
+                    <p class="descripcion">
+                        Aplicación móvil descentralizada para productores rurales. Opera 100% offline y sincroniza reportes de terreno al recuperar conectividad.
+                    </p>
+                    <ul class="caracteristicas">
+                        <li>Diseñada para zonas rurales sin cobertura 4G.</li>
+                        <li>Geolocalización precisa de tranqueras y daños.</li>
+                        <li>Validación cruzada de reportes comunitarios.</li>
+                    </ul>
+                    <a href="sensor-humano.html" class="btn">Abrir App de Terreno</a>
+                </div>
+            </div>
+
+        </div>
+    </main>
 
 </body>
-
 </html>
