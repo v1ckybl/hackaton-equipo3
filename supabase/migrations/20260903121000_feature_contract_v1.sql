@@ -1,8 +1,6 @@
-\set ON_ERROR_STOP on
-
 BEGIN;
 
-SET search_path TO ultima_ventana, public;
+SET search_path TO ultima_ventana, extensions, public;
 
 WITH schema_definition AS (
     SELECT jsonb_build_object(
@@ -165,5 +163,8 @@ WHERE schema_version.version = 'v1'
 
 COMMENT ON VIEW ml_training_rows_v1 IS
     'Reproducible v1 training rows with frozen split and target stored separately from inference features.';
+
+REVOKE ALL ON ml_feature_vectors_v1, ml_training_rows_v1
+    FROM PUBLIC, anon, authenticated, service_role;
 
 COMMIT;

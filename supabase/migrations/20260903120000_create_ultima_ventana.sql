@@ -1,11 +1,10 @@
-\set ON_ERROR_STOP on
-
 BEGIN;
 
-CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE SCHEMA IF NOT EXISTS extensions;
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA extensions;
 CREATE SCHEMA IF NOT EXISTS ultima_ventana;
 
-SET search_path TO ultima_ventana, public;
+SET search_path TO ultima_ventana, extensions, public;
 
 CREATE TABLE source_assets (
     id                  bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
@@ -703,5 +702,20 @@ COMMENT ON TABLE training_labels IS
 
 COMMENT ON TABLE training_dataset_rows IS
     'Frozen membership and split assignment for a reproducible training dataset.';
+
+REVOKE ALL ON SCHEMA ultima_ventana FROM PUBLIC, anon, authenticated, service_role;
+REVOKE ALL ON ALL TABLES IN SCHEMA ultima_ventana
+    FROM PUBLIC, anon, authenticated, service_role;
+REVOKE ALL ON ALL SEQUENCES IN SCHEMA ultima_ventana
+    FROM PUBLIC, anon, authenticated, service_role;
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA ultima_ventana
+    FROM PUBLIC, anon, authenticated, service_role;
+
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA ultima_ventana
+    REVOKE ALL ON TABLES FROM PUBLIC, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA ultima_ventana
+    REVOKE ALL ON SEQUENCES FROM PUBLIC, anon, authenticated, service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA ultima_ventana
+    REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, anon, authenticated, service_role;
 
 COMMIT;

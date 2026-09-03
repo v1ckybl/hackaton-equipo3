@@ -1,8 +1,6 @@
-\set ON_ERROR_STOP on
-
 BEGIN;
 
-SET search_path TO ultima_ventana, public;
+SET search_path TO ultima_ventana, extensions, public;
 
 DO $$
 DECLARE

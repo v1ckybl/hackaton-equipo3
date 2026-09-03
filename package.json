@@ -1,0 +1,19 @@
+{
+  "name": "ultima-ventana-database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "supabase:link": "supabase link --project-ref lepivdjhmuzlinfhxsyr",
+    "db:preflight": "node --env-file-if-exists=.env scripts/db-preflight.mjs",
+    "db:push:dry": "supabase db push --dry-run",
+    "db:push": "supabase db push",
+    "db:lint": "supabase db lint --linked --schema ultima_ventana --level error --fail-on error",
+    "db:check": "node --env-file-if-exists=.env scripts/db-check.mjs",
+    "db:test": "node --env-file-if-exists=.env scripts/db-test.mjs"
+  },
+  "devDependencies": {
+    "pg": "8.23.0",
+    "supabase": "2.116.0"
+  }
+}

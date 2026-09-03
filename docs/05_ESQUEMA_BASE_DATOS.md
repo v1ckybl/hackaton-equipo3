@@ -294,34 +294,39 @@ recibió el modelo y con su ejecución `INFERENCE`. Un trigger impide ejecutar u
 modelo sobre un snapshot con otra versión de features o utilizar una ejecución
 de otro tipo.
 
-## Inicialización local
+## Supabase y despliegue
 
-Requisitos:
+El proyecto remoto es `lepivdjhmuzlinfhxsyr`. Las migraciones versionadas son
+el único origen de verdad y viven en `supabase/migrations/`.
 
-- Docker con soporte para Compose; o
-- una instancia PostgreSQL 16 con PostGIS 3.4 compatible.
+FastAPI debe conectarse con `DATABASE_URL` usando la URI **Session pooler** de
+Supabase, puerto 5432 y `sslmode=require`. El schema `ultima_ventana` permanece
+privado: se revocan permisos a `PUBLIC`, `anon`, `authenticated` y
+`service_role`, por lo que no queda expuesto mediante la Data API.
 
 En PowerShell:
 
 ```powershell
+npm install
 Copy-Item .env.example .env
-docker compose up -d
-docker compose ps
+# Completar .env con la URI Session pooler y la contraseña de base de datos.
+npx supabase login
+npm run supabase:link
+npm run db:preflight
+npm run db:push:dry
+npm run db:push
+npm run db:lint
+npm run db:check
+npm run db:test
 ```
 
-Los scripts de `db/init/` se ejecutan automáticamente cuando se crea el volumen
-por primera vez.
+`db:preflight` es de solo lectura y aborta si encuentra un schema preexistente
+que no esté registrado por estas migraciones. `db:test` abre una transacción,
+prueba constraints, linaje, vistas y el contrato del modelo, y termina con
+`ROLLBACK` para no dejar datos de prueba.
 
-Para correr el smoke test sin dejar datos:
-
-```powershell
-docker compose exec -T db psql `
-  -U ultima_ventana `
-  -d ultima_ventana `
-  -f /workspace/db/tests/smoke.sql
-```
-
-El test se ejecuta dentro de una transacción y finaliza con `ROLLBACK`.
+No ejecutar `supabase db reset --linked`: ese comando es destructivo sobre una
+base remota.
 
 ## Reglas operativas
 
