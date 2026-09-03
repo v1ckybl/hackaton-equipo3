@@ -80,4 +80,9 @@ async def index() -> FileResponse:
     return FileResponse(STATIC_DIR / "index.html")
 
 
+@app.get("/ultima-ventana.html", include_in_schema=False)
+async def ultima_ventana() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
