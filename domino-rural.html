@@ -1,637 +1,117 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#059669">
-  <title>Dominó Rural — Panel de Impacto</title>
-
-  <!-- Google Fonts: Inter -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --verde-primario: #059669; /* Emerald 600 */
-      --verde-oscuro: #065f46;   /* Emerald 800 */
-      --verde-claro: #d1fae5;    /* Emerald 100 */
-      --fondo-gris: #f3f4f6;
-      --texto-principal: #1f2937;
-      --texto-secundario: #4b5563;
-      --blanco: #ffffff;
-      --borde: #e5e7eb;
-      --rojo-alerta: #dc2626;
-      --naranja-advertencia: #d97706;
-      --sombra: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background-color: var(--fondo-gris);
-      color: var(--texto-principal);
-      font-family: 'Inter', sans-serif;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* Cabecera / Hero */
-    header {
-      background: linear-gradient(135deg, var(--verde-oscuro) 0%, var(--verde-primario) 100%);
-      color: var(--blanco);
-      padding: 2.5rem 1.5rem;
-      text-align: center;
-      border-bottom: 5px solid #10b981;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .header-titulo {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 0 auto;
-    }
-
-    header h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-    }
-
-    header span {
-      background: rgba(255, 255, 255, 0.2);
-      padding: 0.4rem 0.9rem;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 500;
-    }
-
-    header p {
-      max-width: 600px;
-      font-size: 0.95rem;
-      color: var(--verde-claro);
-      margin-top: 10px;
-    }
-
-    /* Contenedor Principal */
-    .container {
-      max-width: 1200px;
-      margin: 2.5rem auto 3rem auto;
-      padding: 0 1.5rem;
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 2rem;
-    }
-
-    /* Tarjetas (Cards) */
-    .card {
-      background-color: var(--blanco);
-      border-radius: 16px;
-      padding: 2rem;
-      box-shadow: var(--sombra);
-      border: 1px solid var(--borde);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .card h2 {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--texto-principal);
-      margin-bottom: 1.25rem;
-      border-bottom: 2px solid var(--fondo-gris);
-      padding-bottom: 0.75rem;
-    }
-
-    /* Leyenda */
-    .leyenda {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
-      font-size: 0.9rem;
-      color: var(--texto-secundario);
-      background: #f9fafb;
-      padding: 16px;
-      border-radius: 10px;
-      border: 1px solid var(--borde);
-    }
-    
-    .leyenda .item { 
-      display: flex; 
-      align-items: center; 
-      gap: 10px; 
-      font-weight: 500;
-    }
-    
-    .punto {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      display: inline-block;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
-    }
-    .punto.verde { background: #10b981; }
-    .punto.rojo { background: var(--rojo-alerta); }
-    .punto.gris { background: #6b7280; }
-
-    /* Formulario */
-    label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-      color: var(--texto-secundario);
-    }
-
-    select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid var(--borde);
-      font-size: 0.95rem;
-      margin-bottom: 1.5rem;
-      background: #f9fafb;
-      color: var(--texto-principal);
-      outline: none;
-      cursor: pointer;
-    }
-    
-    select:focus {
-      border-color: var(--verde-primario);
-      box-shadow: 0 0 0 3px var(--verde-claro);
-    }
-
-    button {
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 8px;
-      border: none;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      margin-bottom: 12px;
-    }
-
-    .btn-simular {
-      background-color: var(--verde-primario);
-      color: white;
-    }
-
-    .btn-simular:hover {
-      background-color: var(--verde-oscuro);
-      transform: translateY(-1px);
-    }
-
-    .btn-reset {
-      background-color: #e5e7eb;
-      color: var(--texto-secundario);
-    }
-
-    .btn-reset:hover {
-      background-color: #d1d5db;
-      color: var(--texto-principal);
-    }
-
-    /* Contenedor del Grafo SVG */
-    .svg-container {
-      width: 100%;
-      overflow-x: auto;
-      background: #1f2937; /* Fondo oscuro para el mapa de impacto */
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 10px;
-      border: 1px solid #374151;
-      box-shadow: inset 0 4px 6px rgba(0,0,0,0.2);
-    }
-
-    svg {
-      display: block;
-      margin: 0 auto;
-      min-width: 750px;
-    }
-
-    .linea { 
-      stroke: #10b981; 
-      stroke-width: 4; 
-      transition: all 0.3s ease; 
-    }
-    
-    .linea.cortada { 
-      stroke: var(--rojo-alerta); 
-      stroke-dasharray: 8 6; 
-      stroke-width: 5;
-    }
-
-    .nodo-circulo { 
-      fill: #374151; 
-      stroke: #10b981; 
-      stroke-width: 3; 
-      transition: all 0.4s ease; 
-    }
-    
-    .nodo-circulo.zona-segura { 
-      stroke: #3b82f6; 
-      fill: #1e3a8a; 
-    }
-    
-    .nodo-circulo.apagado { 
-      fill: #111827; 
-      stroke: #4b5563; 
-      opacity: 0.6; 
-    }
-
-    .nodo-texto { 
-      fill: #f9fafb; 
-      font-size: 13px; 
-      font-weight: 700; 
-      text-anchor: middle; 
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .nodo-dato { 
-      fill: #9ca3af; 
-      font-size: 10px; 
-      text-anchor: middle; 
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .nodo-grupo.apagado .nodo-texto, 
-    .nodo-grupo.apagado .nodo-dato { 
-      opacity: 0.4; 
-    }
-
-    /* Resumen de Impacto */
-    #resumen {
-      margin-bottom: 20px;
-      padding: 18px 20px;
-      background: #fffbeb;
-      border-radius: 8px;
-      border-left: 5px solid var(--naranja-advertencia);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      display: none;
-      color: #92400e;
-      animation: fadeIn 0.5s ease-out;
-    }
-    
-    #resumen b { 
-      color: #b45309; 
-    }
-    
-    #resumen ul {
-      margin-top: 10px;
-      margin-left: 20px;
-      margin-bottom: 10px;
-    }
-    
-    #resumen li {
-      margin-bottom: 4px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-5px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 968px) {
-      .container { grid-template-columns: 1fr; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S.I.G.E.A - Domino Rural y Simulación de Aislamiento</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --verde-primario: #059669;
+            --verde-oscuro: #065f46;
+            --fondo-gris: #f3f4f6;
+            --texto-principal: #1f2937;
+            --blanco: #ffffff;
+            --borde: #e5e7eb;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--fondo-gris); color: var(--texto-principal); margin: 0; padding: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; background: var(--blanco); padding: 2.5rem; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        h1 { color: var(--verde-oscuro); margin-bottom: 0.5rem; font-size: 1.8rem; }
+        p.sub { color: #4b5563; margin-bottom: 2rem; }
+        .card { background: #f9fafb; border: 1px solid var(--borde); padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; }
+        label { font-weight: 600; display: block; margin-bottom: 0.5rem; }
+        select, button { padding: 0.85rem; font-size: 1rem; border-radius: 8px; border: 1px solid var(--borde); width: 100%; margin-top: 0.5rem; }
+        button { background-color: var(--verde-primario); color: var(--blanco); font-weight: 600; cursor: pointer; border: none; transition: background 0.2s; }
+        button:hover { background-color: var(--verde-oscuro); }
+        .results { margin-top: 1.5rem; background: #ecfdf5; padding: 1.5rem; border-radius: 12px; border: 1px solid #a7f3d0; display: none; }
+        .results h3 { color: var(--verde-oscuro); margin-bottom: 1rem; }
+        .results ul { margin-top: 0.5rem; padding-left: 1.2rem; }
+        a.back { display: inline-block; margin-bottom: 1.5rem; color: var(--verde-oscuro); text-decoration: none; font-weight: 600; }
+        a.back:hover { text-decoration: underline; }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <a href="index.html" class="back">← Volver al Dashboard Principal</a>
+        <h1>🔗 Domino Rural y Simulación de Aislamiento</h1>
+        <p class="sub">Simula el corte de rutas y caminos rurales críticos para medir el impacto inmediato sobre los establecimientos agropecuarios.</p>
 
-  <header>
-    <div class="header-titulo">
-      <h1>🚜 Dominó Rural</h1>
-      <span>S.I.G.E.A / Logística</span>
-    </div>
-    <p>Simula el corte de caminos rurales y evalúa en tiempo real el efecto cascada en los establecimientos productivos (ganado, producción y logística).</p>
-  </header>
+        <div class="card">
+            <label for="caminoSelect">Seleccionar Camino a Cortar:</label>
+            <select id="caminoSelect">
+                <option value="">Cargando red vial desde el servidor...</option>
+            </select>
+            <button onclick="simularCorte()">Ejecutar Simulación de Corte</button>
+        </div>
 
-  <div class="container">
-    
-    <!-- Columna Izquierda: Panel de Control -->
-    <div class="card">
-      <h2>1. Panel de Simulación</h2>
-
-      <div class="leyenda">
-        <span class="item"><span class="punto verde"></span> Camino transitable</span>
-        <span class="item"><span class="punto rojo"></span> Camino en riesgo / Cortado</span>
-        <span class="item"><span class="punto gris"></span> Establecimiento aislado</span>
-      </div>
-
-      <label for="selectorCamino">¿Qué tramo presenta riesgo hídrico?</label>
-      <select id="selectorCamino">
-        <option value="">Cargando infraestructura vial...</option>
-      </select>
-
-      <button id="btnSimular" class="btn-simular">
-        Ver Efecto Dominó
-      </button>
-      <button id="btnReset" class="btn-reset">
-        Restablecer Red Vial
-      </button>
+        <div id="resultadoContainer" class="results">
+            <h3>📊 Reporte de Impacto Sistémico</h3>
+            <p><strong>Camino interrumpido:</strong> <span id="resCamino"></span></p>
+            <p><strong>Cabezas de Ganado Aisladas:</strong> <span id="resGanado"></span></p>
+            <p><strong>Toneladas de Producción Bloqueadas:</strong> <span id="resToneladas">t</span></p>
+            <p><strong>Camiones Logísticos Afectados:</strong> <span id="resCamiones"></span></p>
+            <h4 style="margin-top: 1rem;">Establecimientos sin salida:</h4>
+            <ul id="listaEstablecimientos"></ul>
+        </div>
     </div>
 
-    <!-- Columna Derecha: Visualización del Grafo y Resumen -->
-    <div class="card">
-      <h2>2. Mapa de Impacto en Cadena</h2>
-
-      <div id="resumen"></div>
-
-      <div class="svg-container">
-        <svg id="diagrama" width="800" height="440" viewBox="0 0 800 440"></svg>
-      </div>
-    </div>
-    
-  </div>
-
-  <script>
-    // Lógica del sistema original, adaptada para integrarse sin problemas 
-    // a la nueva interfaz inspirada en "FloodPrint AI".
-    
-    const API = window.location.origin; // Asume ejecución desde el Python server
-    let grafo = null;
-    let posiciones = {};
-
-    // Función para dibujar los nodos en el SVG como árbol/red
-    function calcularPosiciones(g) {
-      const adyacencia = new Map();
-      g.nodos.forEach(function(n) { adyacencia.set(n.id, []); });
-      g.caminos.forEach(function(c) {
-        adyacencia.get(c.desde).push(c.hasta);
-        adyacencia.get(c.hasta).push(c.desde);
-      });
-
-      const nivel = new Map([['zona-segura', 0]]);
-      const cola = ['zona-segura'];
-      
-      while (cola.length > 0) {
-        const actual = cola.shift();
-        const vecinos = adyacencia.get(actual) || [];
-        for (let i = 0; i < vecinos.length; i++) {
-          const vecino = vecinos[i];
-          if (!nivel.has(vecino)) {
-            nivel.set(vecino, nivel.get(actual) + 1);
-            cola.push(vecino);
-          }
-        }
-      }
-
-      const porNivel = {};
-      g.nodos.forEach(function(n) {
-        const l = nivel.has(n.id) ? nivel.get(n.id) : 0;
-        if (!porNivel[l]) porNivel[l] = [];
-        porNivel[l].push(n.id);
-      });
-
-      const pos = {};
-      Object.keys(porNivel).forEach(function(l) {
-        const ids = porNivel[l];
-        const y = 70 + Number(l) * 150;
-        const paso = 780 / (ids.length + 1);
-        ids.forEach(function(id, i) {
-          pos[id] = { x: paso * (i + 1) + 10, y: y };
-        });
-      });
-
-      return pos;
-    }
-
-    // Orden de aislamiento por distancia
-    function ordenarPorCascada(g, idCaminoCortado, idsAislados) {
-      let camino = null;
-      for (let i = 0; i < g.caminos.length; i++) {
-        if (g.caminos[i].id === idCaminoCortado) { camino = g.caminos[i]; break; }
-      }
-      if (!camino) return idsAislados;
-
-      const adyacencia = new Map();
-      g.nodos.forEach(function(n) { adyacencia.set(n.id, []); });
-      g.caminos.forEach(function(c) {
-        if (c.id === idCaminoCortado) return;
-        adyacencia.get(c.desde).push(c.hasta);
-        adyacencia.get(c.hasta).push(c.desde);
-      });
-
-      const distancia = new Map([[camino.hasta, 0]]);
-      const cola = [camino.hasta];
-      
-      while (cola.length > 0) {
-        const actual = cola.shift();
-        const vecinos = adyacencia.get(actual) || [];
-        for (let i = 0; i < vecinos.length; i++) {
-          const vecino = vecinos[i];
-          if (!distancia.has(vecino)) {
-            distancia.set(vecino, distancia.get(actual) + 1);
-            cola.push(vecino);
-          }
-        }
-      }
-
-      const copia = idsAislados.slice();
-      copia.sort(function(a, b) {
-        const da = distancia.has(a) ? distancia.get(a) : 99;
-        const db = distancia.has(b) ? distancia.get(b) : 99;
-        return da - db;
-      });
-      return copia;
-    }
-
-    // Carga de la estructura de datos (grafo)
-    async function cargarGrafo() {
-      try {
-        const res = await fetch(API + '/api/grafo');
-        if(!res.ok) throw new Error("API no disponible");
-        grafo = await res.json();
-      } catch (e) {
-        console.warn("⚠️ API de Python inactiva. Utilizando datos de prueba (Fallback Local).");
-        // Datos integrados en caso de abrir el HTML estáticamente
-        grafo = {
-          "nodos": [
-            {"id": "zona-segura", "nombre": "Ruta Provincial 12", "cabezasGanado": 0, "toneladasProduccion": 0, "camiones": 0},
-            {"id": "est-1", "nombre": "Estancia La Esperanza", "cabezasGanado": 180, "toneladasProduccion": 40, "camiones": 2, "cultivo": "arroz"},
-            {"id": "est-2", "nombre": "Establecimiento El Ceibo", "cabezasGanado": 90, "toneladasProduccion": 15, "camiones": 1},
-            {"id": "est-3", "nombre": "Campo Don Aurelio", "cabezasGanado": 150, "toneladasProduccion": 30, "camiones": 1, "cultivo": "arroz"},
-            {"id": "est-4", "nombre": "Estancia San Roque", "cabezasGanado": 60, "toneladasProduccion": 10, "camiones": 1}
-          ],
-          "caminos": [
-            {"id": "camino-1", "desde": "zona-segura", "hasta": "est-1", "transitable": true, "nombre": "Camino Rural 3"},
-            {"id": "camino-2", "desde": "est-1", "hasta": "est-2", "transitable": true, "nombre": "Camino Rural 5"},
-            {"id": "camino-3", "desde": "zona-segura", "hasta": "est-3", "transitable": true, "nombre": "Camino Rural 7"},
-            {"id": "camino-4", "desde": "est-3", "hasta": "est-4", "transitable": true, "nombre": "Camino Rural 9"}
-          ]
-        };
-      }
-      
-      posiciones = calcularPosiciones(grafo);
-
-      const selector = document.getElementById('selectorCamino');
-      let opciones = '';
-      grafo.caminos.forEach(function(c) {
-        opciones += '<option value="' + c.id + '">' + (c.nombre || c.id) + ' (Tránsito: ' + c.desde + ' → ' + c.hasta + ')</option>';
-      });
-      selector.innerHTML = opciones;
-
-      dibujar([], null);
-    }
-
-    // Render del SVG
-    function dibujar(idsAislados, idCaminoCortado) {
-      const svg = document.getElementById('diagrama');
-      let contenido = '';
-
-      // Dibujar lineas (caminos)
-      grafo.caminos.forEach(function(c) {
-        const desde = posiciones[c.desde];
-        const hasta = posiciones[c.hasta];
-        if (!desde || !hasta) return;
-        const cortada = (c.id === idCaminoCortado) ? 'cortada' : '';
-        contenido += '<line class="linea ' + cortada + '" x1="' + desde.x + '" y1="' + desde.y + '" x2="' + hasta.x + '" y2="' + hasta.y + '" />';
-      });
-
-      // Dibujar nodos (establecimientos)
-      grafo.nodos.forEach(function(n) {
-        const pos = posiciones[n.id];
-        if (!pos) return;
-        const esZonaSegura = n.id === 'zona-segura';
-        const apagado = idsAislados.indexOf(n.id) !== -1;
-        
-        const claseNodo = ['nodo-circulo', esZonaSegura ? 'zona-segura' : '', apagado ? 'apagado' : ''].join(' ');
-        const claseGrupo = ['nodo-grupo', apagado ? 'apagado' : ''].join(' ');
-        
-        // Truncar nombres muy largos
-        const nombreCorto = n.nombre.split(' ').slice(0, 3).join(' ');
-
-        contenido += '<g class="' + claseGrupo + '">';
-        contenido += '<circle class="' + claseNodo + '" cx="' + pos.x + '" cy="' + pos.y + '" r="46" />';
-        contenido += '<text class="nodo-texto" x="' + pos.x + '" y="' + (pos.y - 20) + '">' + nombreCorto + '</text>';
-        
-        if (!esZonaSegura) {
-          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y - 4) + '">🐄 ' + n.cabezasGanado + ' cab.</text>';
-          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y + 9) + '">🌾 ' + n.toneladasProduccion + ' tn' + (n.cultivo ? ' ' + n.cultivo : '') + '</text>';
-          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y + 22) + '">🚛 ' + n.camiones + ' camión(es)</text>';
-        } else {
-          contenido += '<text class="nodo-dato" x="' + pos.x + '" y="' + (pos.y + 6) + '">Área de Salvaguarda</text>';
-        }
-        
-        contenido += '</g>';
-      });
-
-      svg.innerHTML = contenido;
-    }
-
-    // Efecto Dominó
-    async function simular() {
-      const idCamino = document.getElementById('selectorCamino').value;
-      const btnSimular = document.getElementById('btnSimular');
-      
-      btnSimular.disabled = true;
-      btnSimular.innerText = "Simulando...";
-      
-      let resultado = null;
-
-      try {
-        const res = await fetch(API + '/api/simular-corte', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ idCamino: idCamino })
-        });
-        if(!res.ok) throw new Error("Error HTTP");
-        resultado = await res.json();
-      } catch(e) {
-        // Fallback local si el backend de Python falla (Demo mode)
-        let alcanzables = new Set(["zona-segura"]);
-        let cola = ["zona-segura"];
-        let adyacencia = {};
-        
-        grafo.nodos.forEach(n => adyacencia[n.id] = []);
-        grafo.caminos.forEach(c => {
-            if(c.id !== idCamino) {
-                adyacencia[c.desde].push(c.hasta);
-                adyacencia[c.hasta].push(c.desde);
+    <script>
+        async function cargarGrafo() {
+            try {
+                const res = await fetch('/api/grafo');
+                if (!res.ok) throw new Error("Error al obtener el grafo");
+                const data = await res.json();
+                const select = document.getElementById('caminoSelect');
+                select.innerHTML = '';
+                data.caminos.forEach(c => {
+                    const opt = document.createElement('option');
+                    opt.value = c.id;
+                    opt.textContent = `${c.nombre} (${c.desde} ↔ ${c.hasta})`;
+                    select.appendChild(opt);
+                });
+            } catch (e) {
+                console.error(e);
+                alert("No se pudo conectar con la API de caminos en Render.");
             }
-        });
-        
-        while(cola.length > 0) {
-            let actual = cola.shift();
-            (adyacencia[actual] || []).forEach(vecino => {
-                if(!alcanzables.has(vecino)) {
-                    alcanzables.add(vecino);
-                    cola.push(vecino);
-                }
-            });
         }
-        
-        let aislados = grafo.nodos.filter(n => n.id !== "zona-segura" && !alcanzables.has(n.id));
-        resultado = {
-            caminoCortado: idCamino,
-            establecimientosAislados: aislados,
-            totalCabezasGanado: aislados.reduce((sum, n) => sum + n.cabezasGanado, 0),
-            totalToneladas: aislados.reduce((sum, n) => sum + n.toneladasProduccion, 0),
-            totalCamiones: aislados.reduce((sum, n) => sum + n.camiones, 0)
-        };
-      }
 
-      const idsAislados = resultado.establecimientosAislados.map(function(e) { return e.id; });
+        async function simularCorte() {
+            const idCamino = document.getElementById('caminoSelect').value;
+            if (!idCamino) return alert("Selecciona un camino válido.");
 
-      // Iniciar UI
-      document.getElementById('resumen').style.display = 'none';
-      dibujar([], idCamino);
+            try {
+                const res = await fetch('/api/simular-corte', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idCamino })
+                });
+                if (!res.ok) throw new Error("Error en la simulación");
+                const data = await res.json();
 
-      // Efecto cascada visual
-      const orden = ordenarPorCascada(grafo, idCamino, idsAislados);
-      const acumulados = [];
-      
-      orden.forEach(function(id, i) {
-        setTimeout(function() {
-          acumulados.push(id);
-          dibujar(acumulados, idCamino);
-        }, (i + 1) * 600);
-      });
+                document.getElementById('resCamino').textContent = data.caminoCortado;
+                document.getElementById('resGanado').textContent = data.totalCabezasGanado;
+                document.getElementById('resToneladas').textContent = data.totalToneladas + " t";
+                document.getElementById('resCamiones').textContent = data.totalCamiones;
 
-      // Mostrar resultados
-      setTimeout(function() {
-        btnSimular.disabled = false;
-        btnSimular.innerText = "Ver Efecto Dominó";
-        
-        const resumen = document.getElementById('resumen');
-        resumen.style.display = 'block';
-        
-        resumen.innerHTML = `
-          <div>La interrupción del <b>${idCamino}</b> genera un efecto dominó aislando las siguientes infraestructuras:</div>
-          <ul>
-            <li>🏚️ <b>${resultado.establecimientosAislados.length}</b> establecimiento(s) aislado(s)</li>
-            <li>🐄 <b>${resultado.totalCabezasGanado}</b> cabezas de ganado sin salida</li>
-            <li>🌾 <b>${resultado.totalToneladas}</b> toneladas de producción bloqueadas</li>
-            <li>🚛 <b>${resultado.totalCamiones}</b> camión(es) inmovilizado(s)</li>
-          </ul>
-          ⚠️ <b>Recomendación Operativa:</b> Priorizar recursos para la apertura y reparación temprana de esta ruta.
-        `;
-      }, (orden.length + 1) * 600);
-    }
+                const lista = document.getElementById('listaEstablecimientos');
+                lista.innerHTML = '';
+                if (data.establecimientosAislados.length === 0) {
+                    lista.innerHTML = '<li>Ningún establecimiento quedó aislado. Ruta alternativa disponible.</li>';
+                } else {
+                    data.establecimientosAislados.forEach(est => {
+                        const li = document.createElement('li');
+                        li.textContent = `${est.nombre} — Ganado: ${est.cabezasGanado} cabezas | Producción: ${est.toneladasProduccion}t`;
+                        lista.appendChild(li);
+                    });
+                }
+                document.getElementById('resultadoContainer').style.display = 'block';
+            } catch (e) {
+                console.error(e);
+                alert("Error al ejecutar la simulación en el servidor.");
+            }
+        }
 
-    function reset() {
-      dibujar([], null);
-      document.getElementById('resumen').style.display = 'none';
-    }
-
-    // Eventos
-    document.getElementById('btnSimular').addEventListener('click', simular);
-    document.getElementById('btnReset').addEventListener('click', reset);
-
-    // Boot
-    cargarGrafo();
-  </script>
+        window.onload = cargarGrafo;
+    </script>
 </body>
 </html>
