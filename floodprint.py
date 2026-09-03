@@ -63,30 +63,36 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
 
         es_urbano, densidad = detectar_zona_urbana(gray)
 
+        # MÁSCARAS ESTRICTAS DE AGUA (Evita que sombras de árboles o suelos oscuros pasen por agua)
+        # 1. Agua muy oscura y profunda (reducimos brillo máximo a 30 para evitar sombras comunes)
         lower_w1 = np.array([0, 0, 0])
-        upper_w1 = np.array([180, 255, 45])
+        upper_w1 = np.array([180, 255, 30])
         mask1 = cv2.inRange(hsv, lower_w1, upper_w1)
 
-        lower_w2 = np.array([70, 20, 50])
-        upper_w2 = np.array([140, 255, 230])
+        # 2. Agua azul / turquesa / verdosa brillante
+        lower_w2 = np.array([70, 25, 40])
+        upper_w2 = np.array([140, 255, 220])
         mask2 = cv2.inRange(hsv, lower_w2, upper_w2)
 
-        lower_w3 = np.array([12, 15, 50])
-        upper_w3 = np.array([45, 100, 160])
+        # 3. Agua turbia / con sedimentos
+        lower_w3 = np.array([15, 20, 50])
+        upper_w3 = np.array([40, 90, 150])
         mask3 = cv2.inRange(hsv, lower_w3, upper_w3)
 
         water_mask = cv2.bitwise_or(mask1, mask2)
         water_mask = cv2.bitwise_or(water_mask, mask3)
 
+        # Limpieza Morfológica
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
         water_mask = cv2.morphologyEx(water_mask, cv2.MORPH_OPEN, kernel)
         water_mask = cv2.morphologyEx(water_mask, cv2.MORPH_CLOSE, kernel)
 
+        # Filtrado estricto por área mínima de contorno para ignorar ruido o pequeñas sombras
         contours, _ = cv2.findContours(
             water_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE
         )
         mask_filtrada = np.zeros_like(water_mask)
-        min_area = total_pixels * 0.0015 
+        min_area = total_pixels * 0.005  # Aumentado al 0.5% para ignorar charcos menores o sombras dispersas
 
         for cnt in contours:
             if cv2.contourArea(cnt) > min_area:
@@ -106,9 +112,10 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
             round((porcentaje_dano / 100.0) * superficie_total, 1)
         )
 
-        if porcentaje_dano > 25.0:
+        # UMBRALES DE SEVERIDAD CALIBRADOS
+        if porcentaje_dano > 20.0:
             nivel_severidad = "ALTA"
-        elif porcentaje_dano >= 8.0:
+        elif porcentaje_dano >= 6.0:
             nivel_severidad = "MEDIA"
         else:
             nivel_severidad = "BAJA"
@@ -117,7 +124,7 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
 
         return {
             "status": "success",
-            "metodo": "Visión por Computadora (OpenCV - Análisis Espectral y Textura Ajustado)",
+            "metodo": "Visión por Computadora (OpenCV - Espectro Hídrico Calibrado)",
             "datos": {
                 "superficie_total_ha": superficie_total,
                 "area_afectada_ha": area_afectada,
@@ -128,12 +135,8 @@ async def analizar_imagen_real(file: UploadFile = File(...)):
             },
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        print("ERROR:", str(e))
+        raise HTTPException(status_code=500, detail=f"Error en IA: {str(e)}")
 
 
-# =======================================================
-# SERVIR FRONTEND DE FORMA ESTÁTICA (Solución definitiva)
-# =======================================================
-# Esto le dice a FastAPI que monte la carpeta actual y busque automáticamente 
-# el index.html cuando entren a la raíz (/) y permita abrir las demás páginas (.html)
 app.mount("/", StaticFiles(directory=".", html=True), name="static")
